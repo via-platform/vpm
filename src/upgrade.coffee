@@ -73,17 +73,18 @@ class Upgrade extends Command
       @loadInstalledAtomMetadata(callback)
 
   getLatestVersion: (pack, callback) ->
+    url = "#{config.getAtomPackagesUrl()}/#{pack.name}"
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{pack.name}"
+      url: url
       json: true
     request.get requestSettings, (error, response, body={}) =>
       if error?
-        callback("Request for package information failed: #{error.message}")
+        callback("Request for package information from #{url} failed: #{error.message}")
       else if response.statusCode is 404
         callback()
       else if response.statusCode isnt 200
         message = body.message ? body.error ? body
-        callback("Request for package information failed: #{message}")
+        callback("Request for package information from #{url} failed: #{message}")
       else
         atomVersion = @installedAtomVersion
         latestVersion = pack.version

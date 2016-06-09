@@ -40,12 +40,13 @@ class Develop extends Command
     options.alias('h', 'help').describe('help', 'Print this usage message')
 
   getRepositoryUrl: (packageName, callback) ->
+    url = "#{config.getAtomPackagesUrl()}/#{packageName}"
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}"
+      url: url
       json: true
     request.get requestSettings, (error, response, body={}) ->
       if error?
-        callback("Request for package information failed: #{error.message}")
+        message = "Request for package information from #{url} failed: #{error.message}"
       else if response.statusCode is 200
         if repositoryUrl = body.repository.url
           callback(null, repositoryUrl)
@@ -53,7 +54,7 @@ class Develop extends Command
           callback("No repository URL found for package: #{packageName}")
       else
         message = request.getErrorMessage(response, body)
-        callback("Request for package information failed: #{message}")
+        callback("Request for package information from #{url} failed: #{message}")
 
   cloneRepository: (repoUrl, packageDirectory, options, callback = ->) ->
     config.getSetting 'git', (command) =>

@@ -214,18 +214,19 @@ class Install extends Command
   # callback - The function to invoke when the request completes with an error
   #            as the first argument and an object as the second.
   requestPackage: (packageName, callback) ->
+    url = "#{config.getAtomPackagesUrl()}/#{packageName}"
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}"
+      url: url
       json: true
       retries: 4
     request.get requestSettings, (error, response, body={}) ->
       if error?
-        message = "Request for package information failed: #{error.message}"
+        message = "Request for package information from #{url} failed: #{error.message}"
         message += " (#{error.code})" if error.code
         callback(message)
       else if response.statusCode isnt 200
         message = request.getErrorMessage(response, body)
-        callback("Request for package information failed: #{message}")
+        callback("Request for package information from #{url} failed: #{message}")
       else
         if body.releases.latest
           callback(null, body)
