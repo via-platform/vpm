@@ -1,10 +1,10 @@
 path = require 'path'
 express = require 'express'
 http = require 'http'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 Docs = require('../lib/docs')
 
-describe 'apm docs', ->
+describe 'vpm docs', ->
   server = null
 
   beforeEach ->
@@ -19,14 +19,14 @@ describe 'apm docs', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    process.env.ATOM_PACKAGES_URL = "http://localhost:3000"
+    process.env.VIA_PACKAGES_URL = "http://localhost:3000"
 
   afterEach ->
     server.close()
 
   it 'logs an error if the package has no URL', ->
     callback = jasmine.createSpy('callback')
-    apm.run(['docs', 'install'], callback)
+    vpm.run(['docs', 'install'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -36,7 +36,7 @@ describe 'apm docs', ->
 
   it "logs an error if the package name is missing or empty", ->
     callback = jasmine.createSpy('callback')
-    apm.run(['docs'], callback)
+    vpm.run(['docs'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -48,7 +48,7 @@ describe 'apm docs', ->
   it "prints the package URL if called with the --print option (and does not open it)", ->
     spyOn(Docs.prototype, 'openRepositoryUrl')
     callback = jasmine.createSpy('callback')
-    apm.run(['docs', '--print', 'wrap-guide'], callback)
+    vpm.run(['docs', '--print', 'wrap-guide'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -56,13 +56,13 @@ describe 'apm docs', ->
     runs ->
       expect(Docs::openRepositoryUrl).not.toHaveBeenCalled()
       expect(console.log).toHaveBeenCalled()
-      expect(console.log.argsForCall[0][0]).toContain 'https://github.com/atom/wrap-guide'
+      expect(console.log.argsForCall[0][0]).toContain 'https://github.com/via/wrap-guide'
 
   it "prints the package URL if called with the -p short option (and does not open it)", ->
     Docs = require('../lib/docs')
     spyOn(Docs.prototype, 'openRepositoryUrl')
     callback = jasmine.createSpy('callback')
-    apm.run(['docs', '-p', 'wrap-guide'], callback)
+    vpm.run(['docs', '-p', 'wrap-guide'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -70,12 +70,12 @@ describe 'apm docs', ->
     runs ->
       expect(Docs::openRepositoryUrl).not.toHaveBeenCalled()
       expect(console.log).toHaveBeenCalled()
-      expect(console.log.argsForCall[0][0]).toContain 'https://github.com/atom/wrap-guide'
+      expect(console.log.argsForCall[0][0]).toContain 'https://github.com/via/wrap-guide'
 
   it "opens the package URL", ->
     spyOn(Docs.prototype, 'openRepositoryUrl')
     callback = jasmine.createSpy('callback')
-    apm.run(['docs', 'wrap-guide'], callback)
+    vpm.run(['docs', 'wrap-guide'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0

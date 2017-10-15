@@ -5,27 +5,27 @@
   "versions": {
     "0.4.0": {
       "engines": {
-        "atom": ">=2.0"
+        "via": ">=2.0"
       }
     },
     "0.3.0": {
       "engines": {
-        "atom": ">=0.5.0"
+        "via": ">=0.5.0"
       }
     },
     "0.2.1": {
       "engines": {
-        "atom": "invalid"
+        "via": "invalid"
       }
     },
     "0.2.0": {
       "engines": {
-        "atom": ">=0.5.0"
+        "via": ">=0.5.0"
       }
     },
     "0.1.0": {
       "engines": {
-        "atom": ">=0.4.0"
+        "via": ">=0.4.0"
       }
     }
   }

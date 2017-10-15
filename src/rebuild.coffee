@@ -3,7 +3,7 @@ path = require 'path'
 _ = require 'underscore-plus'
 yargs = require 'yargs'
 
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 Install = require './install'
 
@@ -12,14 +12,14 @@ class Rebuild extends Command
   @commandNames: ['rebuild']
 
   constructor: ->
-    @atomNodeDirectory = path.join(config.getAtomDirectory(), '.node-gyp')
-    @atomNpmPath = require.resolve('npm/bin/npm-cli')
+    @viaNodeDirectory = path.join(config.getAtomDirectory(), '.node-gyp')
+    @viaNpmPath = require.resolve('npm/bin/npm-cli')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm rebuild [<name> [<name> ...]]
+      Usage: vpm rebuild [<name> [<name> ...]]
 
       Rebuild the given modules currently installed in the node_modules folder
       in the current working directory.
@@ -52,11 +52,11 @@ class Rebuild extends Command
     if vsArgs = @getVisualStudioFlags()
       rebuildArgs.push(vsArgs)
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
     env.USERPROFILE = env.HOME if config.isWin32()
     @addBuildEnvVars(env)
 
-    @fork(@atomNpmPath, rebuildArgs, {env}, callback)
+    @fork(@viaNpmPath, rebuildArgs, {env}, callback)
 
   run: (options) ->
     {callback} = options

@@ -5,7 +5,7 @@ _ = require 'underscore-plus'
 async = require 'async'
 yargs = require 'yargs'
 
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 Install = require './install'
 git = require './git'
@@ -17,24 +17,24 @@ class Develop extends Command
   @commandNames: ['dev', 'develop']
 
   constructor: ->
-    @atomDirectory = config.getAtomDirectory()
-    @atomDevPackagesDirectory = path.join(@atomDirectory, 'dev', 'packages')
+    @viaDirectory = config.getAtomDirectory()
+    @viaDevPackagesDirectory = path.join(@viaDirectory, 'dev', 'packages')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
 
     options.usage """
-      Usage: apm develop <package_name> [<directory>]
+      Usage: vpm develop <package_name> [<directory>]
 
       Clone the given package's Git repository to the directory specified,
       install its dependencies, and link it for development to
-      ~/.atom/dev/packages/<package_name>.
+      ~/.via/dev/packages/<package_name>.
 
       If no directory is specified then the repository is cloned to
       ~/github/<package_name>. The default folder to clone packages into can
-      be overridden using the ATOM_REPOS_HOME environment variable.
+      be overridden using the VIA_REPOS_HOME environment variable.
 
-      Once this command completes you can open a dev window from atom using
+      Once this command completes you can open a dev window from via using
       cmd-shift-o to run the package out of the newly cloned repository.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')

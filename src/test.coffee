@@ -15,23 +15,23 @@ class Test extends Command
 
     options.usage """
       Usage:
-        apm test
+        vpm test
 
       Runs the package's tests contained within the spec directory (relative
       to the current working directory).
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
-    options.alias('p', 'path').string('path').describe('path', 'Path to atom command')
+    options.alias('p', 'path').string('path').describe('path', 'Path to via command')
 
   run: (options) ->
     {callback} = options
     options = @parseOptions(options.commandArgs)
     {env} = process
 
-    atomCommand = options.argv.path if options.argv.path
-    unless fs.existsSync(atomCommand)
-      atomCommand = 'atom'
-      atomCommand += '.cmd' if process.platform is 'win32'
+    viaCommand = options.argv.path if options.argv.path
+    unless fs.existsSync(viaCommand)
+      viaCommand = 'via'
+      viaCommand += '.cmd' if process.platform is 'win32'
 
     packagePath = process.cwd()
     testArgs = ['--dev', '--test', path.join(packagePath, 'spec')]
@@ -42,7 +42,7 @@ class Test extends Command
       logFilePath = logFile.path
       testArgs.push("--log-file=#{logFilePath}")
 
-      @spawn atomCommand, testArgs, (code) ->
+      @spawn viaCommand, testArgs, (code) ->
         try
           loggedOutput = fs.readFileSync(logFilePath, 'utf8')
           process.stdout.write("#{loggedOutput}\n") if loggedOutput
@@ -55,11 +55,11 @@ class Test extends Command
         else
           callback('Tests failed')
     else
-      @spawn atomCommand, testArgs, {env, streaming: true}, (code) ->
+      @spawn viaCommand, testArgs, {env, streaming: true}, (code) ->
         if code is 0
           process.stdout.write 'Tests passed\n'.green
           callback()
         else if code?.message
-          callback("Error spawning #{atomCommand}: #{code.message}")
+          callback("Error spawning #{viaCommand}: #{code.message}")
         else
           callback('Tests failed')

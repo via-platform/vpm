@@ -1,9 +1,9 @@
 path = require 'path'
 express = require 'express'
 http = require 'http'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm featured', ->
+describe 'vpm featured', ->
   server = null
 
   beforeEach ->
@@ -19,14 +19,14 @@ describe 'apm featured', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    process.env.ATOM_API_URL = "http://localhost:3000"
+    process.env.VIA_API_URL = "http://localhost:3000"
 
   afterEach ->
     server.close()
 
   it 'lists the featured packages and themes', ->
     callback = jasmine.createSpy('callback')
-    apm.run(['featured'], callback)
+    vpm.run(['featured'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -40,7 +40,7 @@ describe 'apm featured', ->
   describe 'when the theme flag is specified', ->
     it "lists the featured themes", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['featured', '--themes'], callback)
+      vpm.run(['featured', '--themes'], callback)
 
       waitsFor 'waiting for command to complete', ->
         callback.callCount > 0

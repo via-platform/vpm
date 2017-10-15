@@ -24,16 +24,16 @@ module.exports =
         else
           Promise.reject()
       .catch ->
-        if token = process.env.ATOM_ACCESS_TOKEN
+        if token = process.env.VIA_ACCESS_TOKEN
           callback(null, token)
         else
           callback """
             No Atom.io API token in keychain
-            Run `apm login` or set the `ATOM_ACCESS_TOKEN` environment variable.
+            Run `vpm login` or set the `VIA_ACCESS_TOKEN` environment variable.
           """
 
   # Save the given token to the keychain.
   #
   # token - A string token to save.
   saveToken: (token) ->
-    keytar.setPassword(tokenName, 'atom.io', token)
+    keytar.setPassword(tokenName, 'via.io', token)

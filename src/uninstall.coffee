@@ -6,7 +6,7 @@ yargs = require 'yargs'
 
 auth = require './auth'
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 request = require './request'
 
@@ -18,13 +18,13 @@ class Uninstall extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm uninstall <package_name>...
+      Usage: vpm uninstall <package_name>...
 
-      Delete the installed package(s) from the ~/.atom/packages directory.
+      Delete the installed package(s) from the ~/.via/packages directory.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
-    options.alias('d', 'dev').boolean('dev').describe('dev', 'Uninstall from ~/.atom/dev/packages')
-    options.boolean('hard').describe('hard', 'Uninstall from ~/.atom/packages and ~/.atom/dev/packages')
+    options.alias('d', 'dev').boolean('dev').describe('dev', 'Uninstall from ~/.via/dev/packages')
+    options.boolean('hard').describe('hard', 'Uninstall from ~/.via/packages and ~/.via/dev/packages')
 
   getPackageVersion: (packageDirectory) ->
     try

@@ -1,39 +1,39 @@
 path = require 'path'
 fs = require 'fs-plus'
 temp = require 'temp'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe "apm config", ->
-  [atomHome, userConfigPath] = []
+describe "vpm config", ->
+  [viaHome, userConfigPath] = []
 
   beforeEach ->
     spyOnToken()
     silenceOutput()
 
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
-    userConfigPath = path.join(atomHome, '.apmrc')
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
+    userConfigPath = path.join(viaHome, '.vpmrc')
 
     # Make sure the cache used is the one for the test env
     delete process.env.npm_config_cache
 
-  describe "apm config get", ->
+  describe "vpm config get", ->
     it "reads the value from the global config when there is no user config", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['config', 'get', 'cache'], callback)
+      vpm.run(['config', 'get', 'cache'], callback)
 
       waitsFor 'waiting for config get to complete', 600000, ->
         callback.callCount is 1
 
       runs ->
-        expect(process.stdout.write.argsForCall[0][0].trim()).toBe path.join(process.env.ATOM_HOME, '.apm')
+        expect(process.stdout.write.argsForCall[0][0].trim()).toBe path.join(process.env.VIA_HOME, '.vpm')
 
-  describe "apm config set", ->
+  describe "vpm config set", ->
     it "sets the value in the user config", ->
       expect(fs.isFileSync(userConfigPath)).toBe false
 
       callback = jasmine.createSpy('callback')
-      apm.run(['config', 'set', 'foo', 'bar'], callback)
+      vpm.run(['config', 'set', 'foo', 'bar'], callback)
 
       waitsFor 'waiting for config set to complete', 600000, ->
         callback.callCount is 1
@@ -42,7 +42,7 @@ describe "apm config", ->
         expect(fs.isFileSync(userConfigPath)).toBe true
 
         callback.reset()
-        apm.run(['config', 'get', 'foo'], callback)
+        vpm.run(['config', 'get', 'foo'], callback)
 
       waitsFor 'waiting for config get to complete', 600000, ->
         callback.callCount is 1

@@ -4,18 +4,18 @@ path = require 'path'
 temp = require 'temp'
 CSON = require 'season'
 
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm disable', ->
+describe 'vpm disable', ->
   beforeEach ->
     silenceOutput()
     spyOnToken()
 
   it 'disables an enabled package', ->
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
     callback = jasmine.createSpy('callback')
-    configFilePath = path.join(atomHome, 'config.cson')
+    configFilePath = path.join(viaHome, 'config.cson')
 
     CSON.writeFileSync configFilePath, '*':
       core:
@@ -23,7 +23,7 @@ describe 'apm disable', ->
           "test-module"
         ]
 
-    packagesPath = path.join(atomHome, 'packages')
+    packagesPath = path.join(viaHome, 'packages')
     packageSrcPath = path.join(__dirname, 'fixtures')
     fs.makeTreeSync(packagesPath)
     wrench.copyDirSyncRecursive(path.join(packageSrcPath, 'test-module'), path.join(packagesPath, 'test-module'))
@@ -31,7 +31,7 @@ describe 'apm disable', ->
     wrench.copyDirSyncRecursive(path.join(packageSrcPath, 'test-module-three'), path.join(packagesPath, 'test-module-three'))
 
     runs ->
-      apm.run(['disable', 'test-module-two', 'not-installed', 'test-module-three'], callback)
+      vpm.run(['disable', 'test-module-two', 'not-installed', 'test-module-three'], callback)
 
     waitsFor 'waiting for disable to complete', ->
       callback.callCount > 0
@@ -51,10 +51,10 @@ describe 'apm disable', ->
           ]
 
   it 'does nothing if a package is already disabled', ->
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
     callback = jasmine.createSpy('callback')
-    configFilePath = path.join(atomHome, 'config.cson')
+    configFilePath = path.join(viaHome, 'config.cson')
 
     CSON.writeFileSync configFilePath, '*':
       core:
@@ -66,7 +66,7 @@ describe 'apm disable', ->
         ]
 
     runs ->
-      apm.run(['disable', 'vim-mode', 'metrics'], callback)
+      vpm.run(['disable', 'vim-mode', 'metrics'], callback)
 
     waitsFor 'waiting for disable to complete', ->
       callback.callCount > 0
@@ -83,12 +83,12 @@ describe 'apm disable', ->
           ]
 
   it 'produces an error if config.cson doesn\'t exist', ->
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
     callback = jasmine.createSpy('callback')
 
     runs ->
-      apm.run(['disable', 'vim-mode'], callback)
+      vpm.run(['disable', 'vim-mode'], callback)
 
     waitsFor 'waiting for disable to complete', ->
       callback.callCount > 0
@@ -98,12 +98,12 @@ describe 'apm disable', ->
       expect(console.error.argsForCall[0][0].length).toBeGreaterThan 0
 
   it 'complains if user supplies no packages', ->
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
     callback = jasmine.createSpy('callback')
 
     runs ->
-      apm.run(['disable'], callback)
+      vpm.run(['disable'], callback)
 
     waitsFor 'waiting for disable to complete', ->
       callback.callCount > 0

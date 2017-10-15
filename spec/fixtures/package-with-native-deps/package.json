@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./index.js",
   "engines": {
-    "atom": "*"
+    "via": "*"
   },
   "dependencies": {
     "native-dep": "./node_modules/native-dep"

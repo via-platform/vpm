@@ -3,7 +3,7 @@ path = require 'path'
 CSON = require 'season'
 yargs = require 'yargs'
 
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 
 module.exports =
@@ -14,7 +14,7 @@ class Enable extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm enable [<package_name>]...
+      Usage: vpm enable [<package_name>]...
 
       Enables the named package(s).
     """

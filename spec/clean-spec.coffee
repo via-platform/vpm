@@ -4,9 +4,9 @@ temp = require 'temp'
 express = require 'express'
 http = require 'http'
 wrench = require 'wrench'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm clean', ->
+describe 'vpm clean', ->
   [moduleDirectory, server] = []
 
   beforeEach ->
@@ -27,12 +27,12 @@ describe 'apm clean', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
-    process.env.ATOM_ELECTRON_URL = "http://localhost:3000/node"
-    process.env.ATOM_ELECTRON_VERSION = 'v0.10.3'
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
+    process.env.VIA_ELECTRON_URL = "http://localhost:3000/node"
+    process.env.VIA_ELECTRON_VERSION = 'v0.10.3'
 
-    moduleDirectory = path.join(temp.mkdirSync('apm-test-module-'), 'test-module-with-dependencies')
+    moduleDirectory = path.join(temp.mkdirSync('vpm-test-module-'), 'test-module-with-dependencies')
     wrench.copyDirSyncRecursive(path.join(__dirname, 'fixtures', 'test-module-with-dependencies'), moduleDirectory)
     process.chdir(moduleDirectory)
 
@@ -44,7 +44,7 @@ describe 'apm clean', ->
     fs.makeTreeSync(removedPath)
 
     callback = jasmine.createSpy('callback')
-    apm.run(['clean'], callback)
+    vpm.run(['clean'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -54,11 +54,11 @@ describe 'apm clean', ->
       expect(fs.existsSync(removedPath)).toBeFalsy()
 
   it 'uninstalls a scoped package', ->
-    removedPath = path.join(moduleDirectory, 'node_modules', '@types/atom')
+    removedPath = path.join(moduleDirectory, 'node_modules', '@types/via')
     fs.makeTreeSync(removedPath)
 
     callback = jasmine.createSpy('callback')
-    apm.run(['clean'], callback)
+    vpm.run(['clean'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0

@@ -1,23 +1,23 @@
 path = require 'path'
 fs = require 'fs-plus'
 temp = require 'temp'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe "apm develop", ->
+describe "vpm develop", ->
   [repoPath, linkedRepoPath] = []
 
   beforeEach ->
     silenceOutput()
     spyOnToken()
 
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
 
-    atomReposHome = temp.mkdirSync('apm-repos-home-dir-')
-    process.env.ATOM_REPOS_HOME = atomReposHome
+    viaReposHome = temp.mkdirSync('vpm-repos-home-dir-')
+    process.env.VIA_REPOS_HOME = viaReposHome
 
-    repoPath = path.join(atomReposHome, 'fake-package')
-    linkedRepoPath = path.join(atomHome, 'dev', 'packages', 'fake-package')
+    repoPath = path.join(viaReposHome, 'fake-package')
+    linkedRepoPath = path.join(viaHome, 'dev', 'packages', 'fake-package')
 
   describe "when the package doesn't have a published repository url", ->
     it "logs an error", ->
@@ -26,7 +26,7 @@ describe "apm develop", ->
         callback("Here is the error")
 
       callback = jasmine.createSpy('callback')
-      apm.run(['develop', "fake-package"], callback)
+      vpm.run(['develop', "fake-package"], callback)
 
       waitsFor 'waiting for develop to complete', ->
         callback.callCount is 1
@@ -37,7 +37,7 @@ describe "apm develop", ->
         expect(fs.existsSync(linkedRepoPath)).toBeFalsy()
 
   describe "when the repository hasn't been cloned", ->
-    it "clones the repository to ATOM_REPOS_HOME and links it to ATOM_HOME/dev/packages", ->
+    it "clones the repository to VIA_REPOS_HOME and links it to VIA_HOME/dev/packages", ->
       Develop = require '../lib/develop'
       spyOn(Develop.prototype, "getRepositoryUrl").andCallFake (packageName, callback) ->
         repoUrl = path.join(__dirname, 'fixtures', 'repo.git')
@@ -46,7 +46,7 @@ describe "apm develop", ->
         @linkPackage(packageDirectory, options)
 
       callback = jasmine.createSpy('callback')
-      apm.run(['develop', "fake-package"], callback)
+      vpm.run(['develop', "fake-package"], callback)
 
       waitsFor 'waiting for develop to complete', ->
         callback.callCount is 1
@@ -59,11 +59,11 @@ describe "apm develop", ->
         expect(fs.realpathSync(linkedRepoPath)).toBe fs.realpathSync(repoPath)
 
   describe "when the repository has already been cloned", ->
-    it "links it to ATOM_HOME/dev/packages", ->
+    it "links it to VIA_HOME/dev/packages", ->
       fs.makeTreeSync(repoPath)
       fs.writeFileSync(path.join(repoPath, "package.json"), "")
       callback = jasmine.createSpy('callback')
-      apm.run(['develop', "fake-package"], callback)
+      vpm.run(['develop', "fake-package"], callback)
 
       waitsFor 'waiting for develop to complete', ->
         callback.callCount is 1

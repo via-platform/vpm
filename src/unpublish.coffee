@@ -5,7 +5,7 @@ yargs = require 'yargs'
 
 auth = require './auth'
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 request = require './request'
 
@@ -17,10 +17,10 @@ class Unpublish extends Command
     options = yargs(argv).wrap(100)
 
     options.usage """
-      Usage: apm unpublish [<package_name>]
-             apm unpublish <package_name>@<package_version>
+      Usage: vpm unpublish [<package_name>]
+             vpm unpublish <package_name>@<package_version>
 
-      Remove a published package or package version from the atom.io registry.
+      Remove a published package or package version from the via.io registry.
 
       The package in the current working directory will be used if no package
       name is specified.
@@ -68,7 +68,7 @@ class Unpublish extends Command
       question = "Are you sure you want to unpublish '#{packageLabel}'? (no) "
     else
       question = "Are you sure you want to unpublish ALL VERSIONS of '#{packageLabel}'? " +
-                 "This will remove it from the apm registry, including " +
+                 "This will remove it from the vpm registry, including " +
                  "download counts and stars, and this action is irreversible. (no)"
 
     @prompt question, (answer) =>

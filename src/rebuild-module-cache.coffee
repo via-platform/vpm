@@ -2,7 +2,7 @@ path = require 'path'
 async = require 'async'
 yargs = require 'yargs'
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 
 module.exports =
@@ -10,19 +10,19 @@ class RebuildModuleCache extends Command
   @commandNames: ['rebuild-module-cache']
 
   constructor: ->
-    @atomPackagesDirectory = path.join(config.getAtomDirectory(), 'packages')
+    @viaPackagesDirectory = path.join(config.getAtomDirectory(), 'packages')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm rebuild-module-cache
+      Usage: vpm rebuild-module-cache
 
       Rebuild the module cache for all the packages installed to
-      ~/.atom/packages
+      ~/.via/packages
 
       You can see the state of the module cache for a package by looking
-      at the _atomModuleCache property in the package's package.json file.
+      at the _viaModuleCache property in the package's package.json file.
 
       This command skips all linked packages.
     """
@@ -48,8 +48,8 @@ class RebuildModuleCache extends Command
     {callback} = options
 
     commands = []
-    fs.list(@atomPackagesDirectory).forEach (packageName) =>
-      packageDirectory = path.join(@atomPackagesDirectory, packageName)
+    fs.list(@viaPackagesDirectory).forEach (packageName) =>
+      packageDirectory = path.join(@viaPackagesDirectory, packageName)
       return if fs.isSymbolicLinkSync(packageDirectory)
       return unless fs.isFileSync(path.join(packageDirectory, 'package.json'))
 

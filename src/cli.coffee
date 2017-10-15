@@ -1,6 +1,6 @@
-apm = require './apm-cli'
+vpm = require './vpm-cli'
 
-process.title = 'apm'
+process.title = 'vpm'
 
-apm.run process.argv.slice(2), (error) ->
+vpm.run process.argv.slice(2), (error) ->
   process.exitCode = if error? then 1 else 0

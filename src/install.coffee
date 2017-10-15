@@ -10,7 +10,7 @@ semver = require 'semver'
 temp = require 'temp'
 hostedGitInfo = require 'hosted-git-info'
 
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 fs = require './fs'
 RebuildModuleCache = require './rebuild-module-cache'
@@ -22,23 +22,23 @@ class Install extends Command
   @commandNames: ['install', 'i']
 
   constructor: ->
-    @atomDirectory = config.getAtomDirectory()
-    @atomPackagesDirectory = path.join(@atomDirectory, 'packages')
-    @atomNodeDirectory = path.join(@atomDirectory, '.node-gyp')
-    @atomNpmPath = require.resolve('npm/bin/npm-cli')
+    @viaDirectory = config.getAtomDirectory()
+    @viaPackagesDirectory = path.join(@viaDirectory, 'packages')
+    @viaNodeDirectory = path.join(@viaDirectory, '.node-gyp')
+    @viaNpmPath = require.resolve('npm/bin/npm-cli')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm install [<package_name>...]
-             apm install <package_name>@<package_version>
-             apm install <git_remote>
-             apm install <github_username>/<github_project>
-             apm install --packages-file my-packages.txt
-             apm i (with any of the previous argument usage)
+      Usage: vpm install [<package_name>...]
+             vpm install <package_name>@<package_version>
+             vpm install <git_remote>
+             vpm install <github_username>/<github_project>
+             vpm install --packages-file my-packages.txt
+             vpm i (with any of the previous argument usage)
 
-      Install the given Atom package to ~/.atom/packages/<package_name>.
+      Install the given Atom package to ~/.via/packages/<package_name>.
 
       If no package name is given then all the dependencies in the package.json
       file are installed to the node_modules folder in the current working
@@ -66,10 +66,10 @@ class Install extends Command
     installNodeArgs.push("--ensure")
     installNodeArgs.push("--verbose") if @verbose
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
     env.USERPROFILE = env.HOME if config.isWin32()
 
-    fs.makeTreeSync(@atomDirectory)
+    fs.makeTreeSync(@viaDirectory)
 
     # node-gyp doesn't currently have an option for this so just set the
     # environment variable to bypass strict SSL
@@ -81,11 +81,11 @@ class Install extends Command
     proxy = @npm.config.get('https-proxy') or @npm.config.get('proxy') or env.HTTPS_PROXY or env.HTTP_PROXY
     installNodeArgs.push("--proxy=#{proxy}") if proxy
 
-    opts = {env, cwd: @atomDirectory}
+    opts = {env, cwd: @viaDirectory}
     opts.streaming = true if @verbose
 
-    atomNodeGypPath = process.env.ATOM_NODE_GYP_PATH or require.resolve('node-gyp/bin/node-gyp')
-    @fork atomNodeGypPath, installNodeArgs, opts, (code, stderr='', stdout='') ->
+    viaNodeGypPath = process.env.VIA_NODE_GYP_PATH or require.resolve('node-gyp/bin/node-gyp')
+    @fork viaNodeGypPath, installNodeArgs, opts, (code, stderr='', stdout='') ->
       if code is 0
         callback()
       else
@@ -107,18 +107,18 @@ class Install extends Command
     if vsArgs = @getVisualStudioFlags()
       installArgs.push(vsArgs)
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
     @addBuildEnvVars(env)
     installOptions = {env}
     installOptions.streaming = true if @verbose
 
     if installGlobally
-      installDirectory = temp.mkdirSync('apm-install-dir-')
+      installDirectory = temp.mkdirSync('vpm-install-dir-')
       nodeModulesDirectory = path.join(installDirectory, 'node_modules')
       fs.makeTreeSync(nodeModulesDirectory)
       installOptions.cwd = installDirectory
 
-    @fork @atomNpmPath, installArgs, installOptions, (code, stderr='', stdout='') =>
+    @fork @viaNpmPath, installArgs, installOptions, (code, stderr='', stdout='') =>
       if code is 0
         if installGlobally
           commands = []
@@ -127,7 +127,7 @@ class Install extends Command
           assert.equal(children.length, 1, "Expected there to only be one child in node_modules")
           child = children[0]
           source = path.join(nodeModulesDirectory, child)
-          destination = path.join(@atomPackagesDirectory, child)
+          destination = path.join(@viaPackagesDirectory, child)
           commands.push (next) -> fs.cp(source, destination, next)
           commands.push (next) => @buildModuleCache(pack.name, next)
           commands.push (next) => @warmCompileCache(pack.name, next)
@@ -175,7 +175,7 @@ class Install extends Command
 
     message += """
 
-      Run apm -v after installing Git to see what version has been detected.
+      Run vpm -v after installing Git to see what version has been detected.
     """
 
     message
@@ -201,7 +201,7 @@ class Install extends Command
     if vsArgs = @getVisualStudioFlags()
       installArgs.push(vsArgs)
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
     @updateWindowsEnv(env) if config.isWin32()
     @addNodeBinToEnv(env)
     @addProxyToEnv(env)
@@ -209,9 +209,9 @@ class Install extends Command
     installOptions.cwd = options.cwd if options.cwd
     installOptions.streaming = true if @verbose
 
-    @fork(@atomNpmPath, installArgs, installOptions, callback)
+    @fork(@viaNpmPath, installArgs, installOptions, callback)
 
-  # Request package information from the atom.io API for a given package name.
+  # Request package information from the via.io API for a given package name.
   #
   # packageName - The string name of the package to request.
   # callback - The function to invoke when the request completes with an error
@@ -323,7 +323,7 @@ class Install extends Command
     unless options.argv.json
       process.stdout.write "Installing #{label} "
       if installGlobally
-        process.stdout.write "to #{@atomPackagesDirectory} "
+        process.stdout.write "to #{@viaPackagesDirectory} "
 
     @requestPackage packageName, (error, pack) =>
       if error?
@@ -357,7 +357,7 @@ class Install extends Command
           @installModule(options, pack, packagePath, next)
         if installGlobally and packageName isnt pack.name
           commands.push (newPack, next) => # package was renamed; delete old package folder
-            fs.removeSync(path.join(@atomPackagesDirectory, packageName))
+            fs.removeSync(path.join(@viaPackagesDirectory, packageName))
             next(null, newPack)
         commands.push ({installPath}, next) ->
           if installPath?
@@ -409,9 +409,9 @@ class Install extends Command
       {}
 
   createAtomDirectories: ->
-    fs.makeTreeSync(@atomDirectory)
-    fs.makeTreeSync(@atomPackagesDirectory)
-    fs.makeTreeSync(@atomNodeDirectory)
+    fs.makeTreeSync(@viaDirectory)
+    fs.makeTreeSync(@viaPackagesDirectory)
+    fs.makeTreeSync(@viaNodeDirectory)
 
   # Compile a sample native module to see if a useable native build toolchain
   # is instlalled and successfully detected. This will include both Python
@@ -432,7 +432,7 @@ class Install extends Command
       if vsArgs = @getVisualStudioFlags()
         buildArgs.push(vsArgs)
 
-      env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+      env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
       @updateWindowsEnv(env) if config.isWin32()
       @addNodeBinToEnv(env)
       @addProxyToEnv(env)
@@ -441,7 +441,7 @@ class Install extends Command
 
       fs.removeSync(path.resolve(__dirname, '..', 'native-module', 'build'))
 
-      @fork @atomNpmPath, buildArgs, buildOptions, (args...) =>
+      @fork @viaNpmPath, buildArgs, buildOptions, (args...) =>
         @logCommandResults(callback, args...)
 
   packageNamesFromPath: (filePath) ->
@@ -454,14 +454,14 @@ class Install extends Command
     @sanitizePackageNames(packages.split(/\s/))
 
   buildModuleCache: (packageName, callback) ->
-    packageDirectory = path.join(@atomPackagesDirectory, packageName)
+    packageDirectory = path.join(@viaPackagesDirectory, packageName)
     rebuildCacheCommand = new RebuildModuleCache()
     rebuildCacheCommand.rebuild packageDirectory, ->
       # Ignore cache errors and just finish the install
       callback()
 
   warmCompileCache: (packageName, callback) ->
-    packageDirectory = path.join(@atomPackagesDirectory, packageName)
+    packageDirectory = path.join(@viaPackagesDirectory, packageName)
 
     @getResourcePath (resourcePath) =>
       try
@@ -472,7 +472,7 @@ class Install extends Command
 
         onFile = (filePath) =>
           try
-            CompileCache.addPathToCache(filePath, @atomDirectory)
+            CompileCache.addPathToCache(filePath, @viaDirectory)
 
         fs.traverseTreeSync(packageDirectory, onFile, onDirectory)
       callback(null)
@@ -480,11 +480,11 @@ class Install extends Command
   isBundledPackage: (packageName, callback) ->
     @getResourcePath (resourcePath) ->
       try
-        atomMetadata = JSON.parse(fs.readFileSync(path.join(resourcePath, 'package.json')))
+        viaMetadata = JSON.parse(fs.readFileSync(path.join(resourcePath, 'package.json')))
       catch error
         return callback(false)
 
-      callback(atomMetadata?.packageDependencies?.hasOwnProperty(packageName))
+      callback(viaMetadata?.packageDependencies?.hasOwnProperty(packageName))
 
   getLatestCompatibleVersion: (pack) ->
     unless @installedAtomVersion
@@ -499,7 +499,7 @@ class Install extends Command
       continue unless metadata
       continue if isDeprecatedPackage(pack.name, version)
 
-      engine = metadata.engines?.atom ? '*'
+      engine = metadata.engines?.via ? '*'
       continue unless semver.validRange(engine)
       continue unless semver.satisfies(@installedAtomVersion, engine)
 
@@ -514,7 +514,7 @@ class Install extends Command
   installGitPackage: (packageUrl, options, callback) ->
     tasks = []
 
-    cloneDir = temp.mkdirSync("atom-git-package-clone-")
+    cloneDir = temp.mkdirSync("via-git-package-clone-")
 
     tasks.push (data, next) =>
       urls = @getNormalizedGitUrls(packageUrl)
@@ -538,7 +538,7 @@ class Install extends Command
         next(err, data)
 
     tasks.push (data, next) ->
-      data.metadata.apmInstallSource =
+      data.metadata.vpmInstallSource =
         type: "git"
         source: packageUrl
         sha: data.sha
@@ -547,7 +547,7 @@ class Install extends Command
 
     tasks.push (data, next) =>
       {name} = data.metadata
-      targetDir = path.join(@atomPackagesDirectory, name)
+      targetDir = path.join(@viaPackagesDirectory, name)
       process.stdout.write "Moving #{name} to #{targetDir} " unless options.argv.json
       fs.cp cloneDir, targetDir, (err) =>
         if err
@@ -642,7 +642,7 @@ class Install extends Command
           if isBundledPackage
             console.error """
               The #{name} package is bundled with Atom and should not be explicitly installed.
-              You can run `apm uninstall #{name}` to uninstall it and then the version bundled
+              You can run `vpm uninstall #{name}` to uninstall it and then the version bundled
               with Atom will be used.
             """.yellow
           @installRegisteredPackage({name, version}, options, nextInstallStep)

@@ -22,13 +22,13 @@ class Login extends Command
     options = yargs(argv).wrap(100)
 
     options.usage """
-      Usage: apm login
+      Usage: vpm login
 
       Enter your Atom.io API token and save it to the keychain. This token will
-      be used to identify you when publishing packages to atom.io.
+      be used to identify you when publishing packages to via.io.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
-    options.string('token').describe('token', 'atom.io API token')
+    options.string('token').describe('token', 'via.io API token')
 
   run: (options) ->
     {callback} = options
@@ -53,7 +53,7 @@ class Login extends Command
 
       Before you can publish packages, you'll need an API token.
 
-      Visit your account page on Atom.io #{'https://atom.io/account'.underline},
+      Visit your account page on Atom.io #{'https://via.io/account'.underline},
       copy the token and paste it below when prompted.
 
     """
@@ -64,7 +64,7 @@ class Login extends Command
   openURL: (state) ->
     return Q(state) if state.token
 
-    open('https://atom.io/account')
+    open('https://via.io/account')
 
   getToken: (state) =>
     return Q(state) if state.token

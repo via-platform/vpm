@@ -5,9 +5,9 @@ temp = require 'temp'
 express = require 'express'
 http = require 'http'
 wrench = require 'wrench'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm rebuild', ->
+describe 'vpm rebuild', ->
   [server, originalPathEnv] = []
 
   beforeEach ->
@@ -27,12 +27,12 @@ describe 'apm rebuild', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
-    process.env.ATOM_ELECTRON_URL = "http://localhost:3000/node"
-    process.env.ATOM_PACKAGES_URL = "http://localhost:3000/packages"
-    process.env.ATOM_ELECTRON_VERSION = 'v0.10.3'
-    process.env.ATOM_RESOURCE_PATH = temp.mkdirSync('atom-resource-path-')
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
+    process.env.VIA_ELECTRON_URL = "http://localhost:3000/node"
+    process.env.VIA_PACKAGES_URL = "http://localhost:3000/packages"
+    process.env.VIA_ELECTRON_VERSION = 'v0.10.3'
+    process.env.VIA_RESOURCE_PATH = temp.mkdirSync('via-resource-path-')
 
     originalPathEnv = process.env.PATH
     process.env.PATH = ""
@@ -46,7 +46,7 @@ describe 'apm rebuild', ->
 
     process.chdir(packageToRebuild)
     callback = jasmine.createSpy('callback')
-    apm.run(['rebuild'], callback)
+    vpm.run(['rebuild'], callback)
 
     waitsFor 'waiting for rebuild to complete', 600000, ->
       callback.callCount is 1
@@ -59,7 +59,7 @@ describe 'apm rebuild', ->
 
     process.chdir(packageToRebuild)
     callback = jasmine.createSpy('callback')
-    apm.run(['rebuild', 'native-dep'], callback)
+    vpm.run(['rebuild', 'native-dep'], callback)
 
     waitsFor 'waiting for rebuild to complete', 600000, ->
       callback.callCount is 1

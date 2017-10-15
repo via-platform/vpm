@@ -1,9 +1,9 @@
 path = require 'path'
 express = require 'express'
 http = require 'http'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm view', ->
+describe 'vpm view', ->
   server = null
 
   beforeEach ->
@@ -16,14 +16,14 @@ describe 'apm view', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    process.env.ATOM_PACKAGES_URL = "http://localhost:3000"
+    process.env.VIA_PACKAGES_URL = "http://localhost:3000"
 
   afterEach ->
     server.close()
 
   it 'displays information about the package', ->
     callback = jasmine.createSpy('callback')
-    apm.run(['view', 'wrap-guide'], callback)
+    vpm.run(['view', 'wrap-guide'], callback)
 
     waitsFor 'waiting for view to complete', ->
       callback.callCount > 0
@@ -32,12 +32,12 @@ describe 'apm view', ->
       expect(console.log).toHaveBeenCalled()
       expect(console.log.argsForCall[0][0]).toContain 'wrap-guide'
       expect(console.log.argsForCall[1][0]).toContain '0.14.0'
-      expect(console.log.argsForCall[2][0]).toContain 'https://github.com/atom/wrap-guide'
+      expect(console.log.argsForCall[2][0]).toContain 'https://github.com/via/wrap-guide'
       expect(console.log.argsForCall[3][0]).toContain 'new version'
 
   it "logs an error if the package name is missing or empty", ->
     callback = jasmine.createSpy('callback')
-    apm.run(['view'], callback)
+    vpm.run(['view'], callback)
 
     waitsFor 'waiting for view to complete', ->
       callback.callCount > 0
@@ -49,7 +49,7 @@ describe 'apm view', ->
   describe "when a compatible Atom version is specified", ->
     it "displays the latest compatible version of the package", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['view', 'wrap-guide', '--compatible', '1.5.0'], callback)
+      vpm.run(['view', 'wrap-guide', '--compatible', '1.5.0'], callback)
 
       waitsFor 'waiting for view to complete', 600000, ->
         callback.callCount is 1
@@ -57,5 +57,5 @@ describe 'apm view', ->
       runs ->
         expect(console.log.argsForCall[0][0]).toContain 'wrap-guide'
         expect(console.log.argsForCall[1][0]).toContain '0.3.0'
-        expect(console.log.argsForCall[2][0]).toContain 'https://github.com/atom2/wrap-guide'
+        expect(console.log.argsForCall[2][0]).toContain 'https://github.com/via2/wrap-guide'
         expect(console.log.argsForCall[3][0]).toContain 'old version'

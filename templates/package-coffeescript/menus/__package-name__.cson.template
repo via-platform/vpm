@@ -1,6 +1,6 @@
-# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+# See https://via.io/docs/latest/hacking-via-package-word-count#menus for more details
 'context-menu':
-  'atom-text-editor': [
+  'via-text-editor': [
     {
       'label': 'Toggle __package-name__'
       'command': '__package-name__:toggle'

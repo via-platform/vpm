@@ -10,14 +10,14 @@ wordwrap = require 'wordwrap'
 # Enable "require" scripts in asar archives
 require 'asar-require'
 
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 git = require './git'
 
 setupTempDirectory = ->
   temp = require 'temp'
   tempDirectory = require('os').tmpdir()
-  # Resolve ~ in tmp dir atom/atom#2271
+  # Resolve ~ in tmp dir via/via#2271
   tempDirectory = path.resolve(fs.absolute(tempDirectory))
   temp.dir = tempDirectory
   try
@@ -65,16 +65,16 @@ parseOptions = (args=[]) ->
   options = yargs(args).wrap(100)
   options.usage """
 
-    apm - Atom Package Manager powered by https://atom.io
+    vpm - Atom Package Manager powered by https://via.io
 
-    Usage: apm <command>
+    Usage: vpm <command>
 
     where <command> is one of:
     #{wordwrap(4, 80)(Object.keys(commands).sort().join(', '))}.
 
-    Run `apm help <command>` to see the more details about a specific command.
+    Run `vpm help <command>` to see the more details about a specific command.
   """
-  options.alias('v', 'version').describe('version', 'Print the apm version')
+  options.alias('v', 'version').describe('version', 'Print the vpm version')
   options.alias('h', 'help').describe('help', 'Print this usage message')
   options.boolean('color').default('color', true).describe('color', 'Enable colored output')
   options.command = options.argv._[0]
@@ -94,7 +94,7 @@ showHelp = (options) ->
   console.error(help)
 
 printVersions = (args, callback) ->
-  apmVersion =  require('../package.json').version ? ''
+  vpmVersion =  require('../package.json').version ? ''
   npmVersion = require('npm/package.json').version ? ''
   nodeVersion = process.versions.node ? ''
 
@@ -102,7 +102,7 @@ printVersions = (args, callback) ->
     git.getGitVersion (gitVersion) ->
       if args.json
         versions =
-          apm: apmVersion
+          vpm: vpmVersion
           npm: npmVersion
           node: nodeVersion
           python: pythonVersion
@@ -115,7 +115,7 @@ printVersions = (args, callback) ->
         pythonVersion ?= ''
         gitVersion ?= ''
         versions =  """
-          #{'apm'.red}  #{apmVersion.red}
+          #{'vpm'.red}  #{vpmVersion.red}
           #{'npm'.green}  #{npmVersion.green}
           #{'node'.blue} #{nodeVersion.blue} #{process.arch.blue}
           #{'python'.yellow} #{pythonVersion.yellow}

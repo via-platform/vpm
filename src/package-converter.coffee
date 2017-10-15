@@ -46,7 +46,7 @@ class PackageConverter
     downloadUrl += '/archive/master.tar.gz'
 
   downloadBundle: (callback) ->
-    tempPath = temp.mkdirSync('atom-bundle-')
+    tempPath = temp.mkdirSync('via-bundle-')
     requestOptions = url: @getDownloadUrl()
     request.createReadStream requestOptions, (readStream) =>
       readStream.on 'response', ({headers, statusCode}) ->

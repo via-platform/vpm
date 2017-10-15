@@ -64,56 +64,56 @@ class TextMateTheme
 
   buildGlobalSettingsRulesets: (settings) ->
     @rulesets.push
-      selector: 'atom-text-editor'
+      selector: 'via-text-editor'
       properties:
         'background-color': '@syntax-background-color'
         'color': '@syntax-text-color'
 
     @rulesets.push
-      selector: 'atom-text-editor .gutter'
+      selector: 'via-text-editor .gutter'
       properties:
         'background-color': '@syntax-gutter-background-color'
         'color': '@syntax-gutter-text-color'
 
     @rulesets.push
-      selector: 'atom-text-editor .gutter .line-number.cursor-line'
+      selector: 'via-text-editor .gutter .line-number.cursor-line'
       properties:
         'background-color': '@syntax-gutter-background-color-selected'
         'color': '@syntax-gutter-text-color-selected'
 
     @rulesets.push
-      selector: 'atom-text-editor .gutter .line-number.cursor-line-no-selection'
+      selector: 'via-text-editor .gutter .line-number.cursor-line-no-selection'
       properties:
         'color': '@syntax-gutter-text-color-selected'
 
     @rulesets.push
-      selector: 'atom-text-editor .wrap-guide'
+      selector: 'via-text-editor .wrap-guide'
       properties:
         'color': '@syntax-wrap-guide-color'
 
     @rulesets.push
-      selector: 'atom-text-editor .indent-guide'
+      selector: 'via-text-editor .indent-guide'
       properties:
         'color': '@syntax-indent-guide-color'
 
     @rulesets.push
-      selector: 'atom-text-editor .invisible-character'
+      selector: 'via-text-editor .invisible-character'
       properties:
         'color': '@syntax-invisible-character-color'
 
     @rulesets.push
-      selector: 'atom-text-editor.is-focused .cursor'
+      selector: 'via-text-editor.is-focused .cursor'
       properties:
         'border-color': '@syntax-cursor-color'
 
     @rulesets.push
-      selector: 'atom-text-editor.is-focused .selection .region'
+      selector: 'via-text-editor.is-focused .selection .region'
       properties:
         'background-color': '@syntax-selection-color'
 
     @rulesets.push
-      selector: 'atom-text-editor.is-focused .line-number.cursor-line-no-selection,
-                 atom-text-editor.is-focused .line.cursor-line'
+      selector: 'via-text-editor.is-focused .line-number.cursor-line-no-selection,
+                 via-text-editor.is-focused .line.cursor-line'
       properties:
         'background-color': @translateColor(settings.lineHighlight)
 

@@ -2,12 +2,12 @@ path = require 'path'
 fs = require 'fs-plus'
 temp = require 'temp'
 wrench = require 'wrench'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 CSON = require 'season'
 
 listPackages = (args, doneCallback) ->
   callback = jasmine.createSpy('callback')
-  apm.run ['list'].concat(args), callback
+  vpm.run ['list'].concat(args), callback
 
   waitsFor -> callback.callCount is 1
 
@@ -17,7 +17,7 @@ createFakePackage = (type, metadata) ->
   packagesFolder = switch type
     when "user", "git" then "packages"
     when "dev" then path.join("dev", "packages")
-  targetFolder = path.join(process.env.ATOM_HOME, packagesFolder, metadata.name)
+  targetFolder = path.join(process.env.VIA_HOME, packagesFolder, metadata.name)
   fs.makeTreeSync targetFolder
   fs.writeFileSync path.join(targetFolder, 'package.json'), JSON.stringify(metadata)
 
@@ -25,26 +25,26 @@ removeFakePackage = (type, name) ->
   packagesFolder = switch type
     when "user", "git" then "packages"
     when "dev" then path.join("dev", "packages")
-  targetFolder = path.join(process.env.ATOM_HOME, packagesFolder, name)
+  targetFolder = path.join(process.env.VIA_HOME, packagesFolder, name)
   fs.removeSync(targetFolder)
 
-describe 'apm list', ->
-  [resourcePath, atomHome] = []
+describe 'vpm list', ->
+  [resourcePath, viaHome] = []
 
   beforeEach ->
     silenceOutput()
     spyOnToken()
 
-    resourcePath = temp.mkdirSync('apm-resource-path-')
-    atomPackages =
+    resourcePath = temp.mkdirSync('vpm-resource-path-')
+    viaPackages =
       'test-module':
         metadata:
           name: 'test-module'
           version: '1.0.0'
-    fs.writeFileSync(path.join(resourcePath, 'package.json'), JSON.stringify(_atomPackages: atomPackages))
-    process.env.ATOM_RESOURCE_PATH = resourcePath
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    fs.writeFileSync(path.join(resourcePath, 'package.json'), JSON.stringify(_viaPackages: viaPackages))
+    process.env.VIA_RESOURCE_PATH = resourcePath
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
 
     createFakePackage "user",
       name: "user-package"
@@ -55,12 +55,12 @@ describe 'apm list', ->
     createFakePackage "git",
       name: "git-package"
       version: "1.0.0"
-      apmInstallSource:
+      vpmInstallSource:
         type: "git"
         source: "git+ssh://git@github.com:user/repo.git"
         sha: "abcdef1234567890"
 
-    badPackagePath = path.join(process.env.ATOM_HOME, "packages", ".bin")
+    badPackagePath = path.join(process.env.VIA_HOME, "packages", ".bin")
     fs.makeTreeSync badPackagePath
     fs.writeFileSync path.join(badPackagePath, "file.txt"), "some fake stuff"
 
@@ -78,10 +78,10 @@ describe 'apm list', ->
       expect(lines.join("\n")).not.toContain '.bin' # ensure invalid packages aren't listed
 
   it 'labels disabled packages', ->
-    packagesPath = path.join(atomHome, 'packages')
+    packagesPath = path.join(viaHome, 'packages')
     fs.makeTreeSync(packagesPath)
     wrench.copyDirSyncRecursive(path.join(__dirname, 'fixtures', 'test-module'), path.join(packagesPath, 'test-module'))
-    configPath = path.join(atomHome, 'config.cson')
+    configPath = path.join(viaHome, 'config.cson')
     CSON.writeFileSync configPath, '*':
       core: disabledPackages: ["test-module"]
 
@@ -89,7 +89,7 @@ describe 'apm list', ->
       expect(console.log.argsForCall[1][0]).toContain 'test-module@1.0.0 (disabled)'
 
   it 'displays only enabled packages when --enabled is called', ->
-    atomPackages =
+    viaPackages =
       'test-module':
         metadata:
           name: 'test-module'
@@ -99,12 +99,12 @@ describe 'apm list', ->
           name: 'test2-module'
           version: '1.0.0'
 
-    fs.writeFileSync(path.join(resourcePath, 'package.json'), JSON.stringify(_atomPackages: atomPackages))
+    fs.writeFileSync(path.join(resourcePath, 'package.json'), JSON.stringify(_viaPackages: viaPackages))
 
-    packagesPath = path.join(atomHome, 'packages')
+    packagesPath = path.join(viaHome, 'packages')
     fs.makeTreeSync(packagesPath)
     wrench.copyDirSyncRecursive(path.join(__dirname, 'fixtures', 'test-module'), path.join(packagesPath, 'test-module'))
-    configPath = path.join(atomHome, 'config.cson')
+    configPath = path.join(viaHome, 'config.cson')
     CSON.writeFileSync configPath, '*':
       core: disabledPackages: ["test-module"]
 
@@ -117,13 +117,13 @@ describe 'apm list', ->
   it 'lists packages in json format when --json is passed', ->
     listPackages ['--json'], ->
       json = JSON.parse(console.log.argsForCall[0][0])
-      apmInstallSource =
+      vpmInstallSource =
         type: 'git'
         source: 'git+ssh://git@github.com:user/repo.git'
         sha: 'abcdef1234567890'
       expect(json.core).toEqual [name: 'test-module', version: '1.0.0']
       expect(json.dev).toEqual [name: 'dev-package', version: '1.0.0']
-      expect(json.git).toEqual [name: 'git-package', version: '1.0.0', apmInstallSource: apmInstallSource]
+      expect(json.git).toEqual [name: 'git-package', version: '1.0.0', vpmInstallSource: vpmInstallSource]
       expect(json.user).toEqual [name: 'user-package', version: '1.0.0']
 
   describe 'when a section is empty', ->

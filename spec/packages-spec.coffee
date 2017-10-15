@@ -8,10 +8,10 @@ describe 'getRemote', ->
     pack =
       repository:
         type: 'git'
-        url: 'https://github.com/atom/apm.git'
+        url: 'https://github.com/via/vpm.git'
     expect(Packages.getRemote(pack)).toEqual(pack.repository.url)
 
   it 'returns repository', ->
     pack =
-      repository: 'https://github.com/atom/apm'
+      repository: 'https://github.com/via/vpm'
     expect(Packages.getRemote(pack)).toEqual(pack.repository)

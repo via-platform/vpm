@@ -1,18 +1,18 @@
 {
-  "name": "atom-package-manager",
-  "description": "Atom package manager",
+  "name": "via-package-manager",
+  "description": "Via package manager",
   "version": "1.18.8",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atom/apm.git"
+    "url": "https://github.com/via-trading/vpm.git"
   },
   "bugs": {
-    "url": "https://github.com/atom/apm/issues"
+    "url": "https://github.com/via-trading/vpm/issues"
   },
-  "main": "./lib/apm.js",
+  "main": "./lib/vpm.js",
   "bin": {
-    "apm": "./bin/apm"
+    "vpm": "./bin/vpm"
   },
   "scripts": {
     "build": "node script/check-version.js && grunt",

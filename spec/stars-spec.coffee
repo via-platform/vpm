@@ -3,10 +3,10 @@ express = require 'express'
 fs = require 'fs-plus'
 http = require 'http'
 temp = require 'temp'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm stars', ->
-  [atomHome, server] = []
+describe 'vpm stars', ->
+  [viaHome, server] = []
 
   beforeEach ->
     silenceOutput()
@@ -34,12 +34,12 @@ describe 'apm stars', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
-    process.env.ATOM_API_URL = "http://localhost:3000"
-    process.env.ATOM_ELECTRON_URL = "http://localhost:3000/node"
-    process.env.ATOM_PACKAGES_URL = "http://localhost:3000/packages"
-    process.env.ATOM_ELECTRON_VERSION = 'v0.10.3'
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
+    process.env.VIA_API_URL = "http://localhost:3000"
+    process.env.VIA_ELECTRON_URL = "http://localhost:3000/node"
+    process.env.VIA_PACKAGES_URL = "http://localhost:3000/packages"
+    process.env.VIA_ELECTRON_VERSION = 'v0.10.3'
 
   afterEach ->
     server.close()
@@ -47,7 +47,7 @@ describe 'apm stars', ->
   describe "when no user flag is specified", ->
     it 'lists your starred packages', ->
       callback = jasmine.createSpy('callback')
-      apm.run(['stars'], callback)
+      vpm.run(['stars'], callback)
 
       waitsFor 'waiting for command to complete', ->
         callback.callCount > 0
@@ -59,7 +59,7 @@ describe 'apm stars', ->
   describe "when a user flag is specified", ->
     it 'lists their starred packages', ->
       callback = jasmine.createSpy('callback')
-      apm.run(['stars', '--user', 'hubot'], callback)
+      vpm.run(['stars', '--user', 'hubot'], callback)
 
       waitsFor 'waiting for command to complete', ->
         callback.callCount > 0
@@ -70,10 +70,10 @@ describe 'apm stars', ->
 
   describe "when the install flag is specified", ->
     it "installs all of the stars", ->
-      testModuleDirectory = path.join(atomHome, 'packages', 'test-module')
+      testModuleDirectory = path.join(viaHome, 'packages', 'test-module')
       expect(fs.existsSync(testModuleDirectory)).toBeFalsy()
       callback = jasmine.createSpy('callback')
-      apm.run(['stars', '--user', 'hubot', '--install'], callback)
+      vpm.run(['stars', '--user', 'hubot', '--install'], callback)
 
       waitsFor 'waiting for command to complete', ->
         callback.callCount > 0
@@ -86,7 +86,7 @@ describe 'apm stars', ->
   describe 'when the theme flag is specified', ->
     it "only lists themes", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['stars', '--themes'], callback)
+      vpm.run(['stars', '--themes'], callback)
 
       waitsFor 'waiting for command to complete', ->
         callback.callCount > 0

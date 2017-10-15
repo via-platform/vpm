@@ -5,26 +5,26 @@ temp = require 'temp'
 express = require 'express'
 http = require 'http'
 wrench = require 'wrench'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 Install = require '../lib/install'
 
-describe 'apm install', ->
-  [atomHome, resourcePath] = []
+describe 'vpm install', ->
+  [viaHome, resourcePath] = []
 
   beforeEach ->
     spyOnToken()
     silenceOutput()
 
-    atomHome = temp.mkdirSync('apm-home-dir-')
-    process.env.ATOM_HOME = atomHome
+    viaHome = temp.mkdirSync('vpm-home-dir-')
+    process.env.VIA_HOME = viaHome
 
     # Make sure the cache used is the one for the test env
     delete process.env.npm_config_cache
 
-    resourcePath = temp.mkdirSync('atom-resource-path-')
-    process.env.ATOM_RESOURCE_PATH = resourcePath
+    resourcePath = temp.mkdirSync('via-resource-path-')
+    process.env.VIA_RESOURCE_PATH = resourcePath
 
-  describe "when installing an atom package", ->
+  describe "when installing an via package", ->
     server = null
 
     beforeEach ->
@@ -57,8 +57,8 @@ describe 'apm install', ->
         response.sendfile path.join(__dirname, 'fixtures', 'test-module-with-bin-2.0.0.tgz')
       app.get '/packages/multi-module', (request, response) ->
         response.sendfile path.join(__dirname, 'fixtures', 'install-multi-version.json')
-      app.get '/packages/atom-2048', (request, response) ->
-        response.sendfile path.join(__dirname, 'fixtures', 'atom-2048.json')
+      app.get '/packages/via-2048', (request, response) ->
+        response.sendfile path.join(__dirname, 'fixtures', 'via-2048.json')
       app.get '/packages/native-package', (request, response) ->
         response.sendfile path.join(__dirname, 'fixtures', 'native-package.json')
       app.get '/tarball/native-package-1.0.0.tgz', (request, response) ->
@@ -67,11 +67,11 @@ describe 'apm install', ->
       server =  http.createServer(app)
       server.listen(3000)
 
-      atomHome = temp.mkdirSync('apm-home-dir-')
-      process.env.ATOM_HOME = atomHome
-      process.env.ATOM_ELECTRON_URL = "http://localhost:3000/node"
-      process.env.ATOM_PACKAGES_URL = "http://localhost:3000/packages"
-      process.env.ATOM_ELECTRON_VERSION = 'v0.10.3'
+      viaHome = temp.mkdirSync('vpm-home-dir-')
+      process.env.VIA_HOME = viaHome
+      process.env.VIA_ELECTRON_URL = "http://localhost:3000/node"
+      process.env.VIA_PACKAGES_URL = "http://localhost:3000/packages"
+      process.env.VIA_ELECTRON_VERSION = 'v0.10.3'
 
     afterEach ->
       server.close()
@@ -79,7 +79,7 @@ describe 'apm install', ->
     describe 'when an invalid URL is specified', ->
       it 'logs an error and exits', ->
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "not-a-module"], callback)
+        vpm.run(['install', "not-a-module"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -90,14 +90,14 @@ describe 'apm install', ->
 
     describe 'when a package name is specified', ->
       it 'installs the package', ->
-        testModuleDirectory = path.join(atomHome, 'packages', 'test-module')
+        testModuleDirectory = path.join(viaHome, 'packages', 'test-module')
         fs.makeTreeSync(testModuleDirectory)
         existingTestModuleFile = path.join(testModuleDirectory, 'will-be-deleted.js')
         fs.writeFileSync(existingTestModuleFile, '')
         expect(fs.existsSync(existingTestModuleFile)).toBeTruthy()
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "test-module"], callback)
+        vpm.run(['install', "test-module"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -110,11 +110,11 @@ describe 'apm install', ->
 
       describe "when the package is already in the cache", ->
         it "installs it from the cache", ->
-          cachePath = path.join(require('../lib/apm').getCacheDirectory(), 'test-module2', '2.0.0', 'package.tgz')
-          testModuleDirectory = path.join(atomHome, 'packages', 'test-module2')
+          cachePath = path.join(require('../lib/vpm').getCacheDirectory(), 'test-module2', '2.0.0', 'package.tgz')
+          testModuleDirectory = path.join(viaHome, 'packages', 'test-module2')
 
           callback = jasmine.createSpy('callback')
-          apm.run(['install', "test-module2"], callback)
+          vpm.run(['install', "test-module2"], callback)
           expect(fs.isFileSync(cachePath)).toBeFalsy()
 
           waitsFor 'waiting for install to complete', 600000, ->
@@ -127,7 +127,7 @@ describe 'apm install', ->
 
             callback.reset()
             fs.removeSync(path.join(testModuleDirectory, 'package.json'))
-            apm.run(['install', "test-module2"], callback)
+            vpm.run(['install', "test-module2"], callback)
 
           waitsFor 'waiting for install to complete', 600000, ->
             callback.callCount is 1
@@ -140,10 +140,10 @@ describe 'apm install', ->
       describe 'when multiple releases are available', ->
         it 'installs the latest compatible version', ->
           CSON.writeFileSync(path.join(resourcePath, 'package.json'), version: '1.5.0')
-          packageDirectory = path.join(atomHome, 'packages', 'test-module')
+          packageDirectory = path.join(viaHome, 'packages', 'test-module')
 
           callback = jasmine.createSpy('callback')
-          apm.run(['install', 'multi-module'], callback)
+          vpm.run(['install', 'multi-module'], callback)
 
           waitsFor 'waiting for install to complete', 600000, ->
             callback.callCount is 1
@@ -154,10 +154,10 @@ describe 'apm install', ->
 
         it "ignores the commit SHA suffix in the version", ->
           CSON.writeFileSync(path.join(resourcePath, 'package.json'), version: '1.5.0-deadbeef')
-          packageDirectory = path.join(atomHome, 'packages', 'test-module')
+          packageDirectory = path.join(viaHome, 'packages', 'test-module')
 
           callback = jasmine.createSpy('callback')
-          apm.run(['install', 'multi-module'], callback)
+          vpm.run(['install', 'multi-module'], callback)
 
           waitsFor 'waiting for install to complete', 600000, ->
             callback.callCount is 1
@@ -168,10 +168,10 @@ describe 'apm install', ->
 
         it 'logs an error when no compatible versions are available', ->
           CSON.writeFileSync(path.join(resourcePath, 'package.json'), version: '0.9.0')
-          packageDirectory = path.join(atomHome, 'packages', 'test-module')
+          packageDirectory = path.join(viaHome, 'packages', 'test-module')
 
           callback = jasmine.createSpy('callback')
-          apm.run(['install', 'multi-module'], callback)
+          vpm.run(['install', 'multi-module'], callback)
 
           waitsFor 'waiting for install to complete', 600000, ->
             callback.callCount is 1
@@ -182,14 +182,14 @@ describe 'apm install', ->
 
         describe "when the package has been renamed", ->
           it 'installs the package with the new name and removes the old package', ->
-            testRenameDirectory = path.join(atomHome, 'packages', 'test-rename')
-            testModuleDirectory = path.join(atomHome, 'packages', 'test-module')
+            testRenameDirectory = path.join(viaHome, 'packages', 'test-rename')
+            testModuleDirectory = path.join(viaHome, 'packages', 'test-module')
             fs.makeTreeSync(testRenameDirectory)
             expect(fs.existsSync(testRenameDirectory)).toBeTruthy()
             expect(fs.existsSync(testModuleDirectory)).toBeFalsy()
 
             callback = jasmine.createSpy('callback')
-            apm.run(['install', "test-rename"], callback)
+            vpm.run(['install', "test-rename"], callback)
 
             waitsFor 'waiting for install to complete', 600000, ->
               callback.callCount is 1
@@ -203,11 +203,11 @@ describe 'apm install', ->
 
     describe 'when multiple package names are specified', ->
       it 'installs all packages', ->
-        testModuleDirectory = path.join(atomHome, 'packages', 'test-module')
-        testModule2Directory = path.join(atomHome, 'packages', 'test-module2')
+        testModuleDirectory = path.join(viaHome, 'packages', 'test-module')
+        testModule2Directory = path.join(viaHome, 'packages', 'test-module2')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "test-module", "test-module2", "test-module"], callback)
+        vpm.run(['install', "test-module", "test-module2", "test-module"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -220,11 +220,11 @@ describe 'apm install', ->
           expect(callback.mostRecentCall.args[0]).toBeNull()
 
       it "installs them in order and stops on the first failure", ->
-        testModuleDirectory = path.join(atomHome, 'packages', 'test-module')
-        testModule2Directory = path.join(atomHome, 'packages', 'test-module2')
+        testModuleDirectory = path.join(viaHome, 'packages', 'test-module')
+        testModule2Directory = path.join(viaHome, 'packages', 'test-module2')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "test-module", "test-module-bad", "test-module2"], callback)
+        vpm.run(['install', "test-module", "test-module-bad", "test-module2"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -238,11 +238,11 @@ describe 'apm install', ->
 
     describe 'when no path is specified', ->
       it 'installs all dependent modules', ->
-        moduleDirectory = path.join(temp.mkdirSync('apm-test-module-'), 'test-module-with-dependencies')
+        moduleDirectory = path.join(temp.mkdirSync('vpm-test-module-'), 'test-module-with-dependencies')
         wrench.copyDirSyncRecursive(path.join(__dirname, 'fixtures', 'test-module-with-dependencies'), moduleDirectory)
         process.chdir(moduleDirectory)
         callback = jasmine.createSpy('callback')
-        apm.run(['install'], callback)
+        vpm.run(['install'], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount > 0
@@ -254,25 +254,25 @@ describe 'apm install', ->
 
     describe "when the packages directory does not exist", ->
       it "creates the packages directory and any intermediate directories that do not exist", ->
-        atomHome = temp.path('apm-home-dir-')
-        process.env.ATOM_HOME = atomHome
-        expect(fs.existsSync(atomHome)).toBe false
+        viaHome = temp.path('vpm-home-dir-')
+        process.env.VIA_HOME = viaHome
+        expect(fs.existsSync(viaHome)).toBe false
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', 'test-module'], callback)
+        vpm.run(['install', 'test-module'], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
 
         runs ->
-          expect(fs.existsSync(atomHome)).toBe true
+          expect(fs.existsSync(viaHome)).toBe true
 
     describe "when the package contains symlinks", ->
       it "copies them correctly from the temp directory", ->
-        testModuleDirectory = path.join(atomHome, 'packages', 'test-module-with-symlink')
+        testModuleDirectory = path.join(viaHome, 'packages', 'test-module-with-symlink')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "test-module-with-symlink"], callback)
+        vpm.run(['install', "test-module-with-symlink"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -288,10 +288,10 @@ describe 'apm install', ->
     describe "when the package installs binaries", ->
       # regression: caused by the existence of `.bin` in the install folder
       it "correctly installs the package ignoring any binaries", ->
-        testModuleDirectory = path.join(atomHome, 'packages', 'test-module-with-bin')
+        testModuleDirectory = path.join(viaHome, 'packages', 'test-module-with-bin')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "test-module-with-bin"], callback)
+        vpm.run(['install', "test-module-with-bin"], callback)
 
         waitsFor 'waiting for install to complete', 60000, ->
           callback.callCount is 1
@@ -302,12 +302,12 @@ describe 'apm install', ->
 
     describe 'when a packages file is specified', ->
       it 'installs all the packages listed in the file', ->
-        testModuleDirectory = path.join(atomHome, 'packages', 'test-module')
-        testModule2Directory = path.join(atomHome, 'packages', 'test-module2')
+        testModuleDirectory = path.join(viaHome, 'packages', 'test-module')
+        testModule2Directory = path.join(viaHome, 'packages', 'test-module2')
         packagesFilePath = path.join(__dirname, 'fixtures', 'packages.txt')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', '--packages-file', packagesFilePath], callback)
+        vpm.run(['install', '--packages-file', packagesFilePath], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -323,7 +323,7 @@ describe 'apm install', ->
         badFilePath = path.join(__dirname, 'fixtures', 'not-packages.txt')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', '--packages-file', badFilePath], callback)
+        vpm.run(['install', '--packages-file', badFilePath], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -336,7 +336,7 @@ describe 'apm install', ->
         CSON.writeFileSync(path.join(resourcePath, 'package.json'), packageDependencies: 'test-module': '1.0')
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', 'test-module'], callback)
+        vpm.run(['install', 'test-module'], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -347,7 +347,7 @@ describe 'apm install', ->
     describe 'when --check is specified', ->
       it 'compiles a sample native module', ->
         callback = jasmine.createSpy('callback')
-        apm.run(['install', '--check'], callback)
+        vpm.run(['install', '--check'], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -358,7 +358,7 @@ describe 'apm install', ->
     describe 'when a deprecated package name is specified', ->
       it 'does not install the package', ->
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "atom-2048"], callback)
+        vpm.run(['install', "via-2048"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -417,21 +417,21 @@ describe 'apm install', ->
         gitRepo = path.join(__dirname, "fixtures", "test-git-repo.git")
         cloneUrl = "file://#{gitRepo}"
 
-        apm.run ["install", cloneUrl], -> count++
+        vpm.run ["install", cloneUrl], -> count++
 
         waitsFor 10000, ->
           count is 1
 
         runs ->
-          pkgJsonPath = path.join(process.env.ATOM_HOME, 'packages', 'test-git-repo', 'package.json')
+          pkgJsonPath = path.join(process.env.VIA_HOME, 'packages', 'test-git-repo', 'package.json')
 
-      it 'installs the repository with a working dir to $ATOM_HOME/packages', ->
+      it 'installs the repository with a working dir to $VIA_HOME/packages', ->
         expect(fs.existsSync(pkgJsonPath)).toBeTruthy()
 
-      it 'adds apmInstallSource to the package.json with the source and sha', ->
+      it 'adds vpmInstallSource to the package.json with the source and sha', ->
         sha = '8ae432341ac6708aff9bb619eb015da14e9d0c0f'
         json = require(pkgJsonPath)
-        expect(json.apmInstallSource).toEqual
+        expect(json.vpmInstallSource).toEqual
           type: 'git'
           source: cloneUrl
           sha: sha
@@ -443,7 +443,7 @@ describe 'apm install', ->
         allDeps = deps.concat(devDeps)
         expect(allDeps).toEqual ["tiny-node-module-one", "tiny-node-module-two"]
         allDeps.forEach (dep) ->
-          modPath = path.join(process.env.ATOM_HOME, 'packages', 'test-git-repo', 'node_modules', dep)
+          modPath = path.join(process.env.VIA_HOME, 'packages', 'test-git-repo', 'node_modules', dep)
           expect(fs.existsSync(modPath)).toBeTruthy()
 
     describe 'when installing a Git URL and --json is specified', ->
@@ -454,22 +454,22 @@ describe 'apm install', ->
         gitRepo = path.join(__dirname, "fixtures", "test-git-repo.git")
         cloneUrl = "file://#{gitRepo}"
 
-        apm.run ["install", cloneUrl, '--json'], callback
+        vpm.run ["install", cloneUrl, '--json'], callback
 
         waitsFor 10000, ->
           callback.callCount is 1
 
         runs ->
-          pkgJsonPath = path.join(process.env.ATOM_HOME, 'packages', 'test-git-repo', 'package.json')
+          pkgJsonPath = path.join(process.env.VIA_HOME, 'packages', 'test-git-repo', 'package.json')
 
       it 'logs the installation path and the package metadata for a package installed via git url', ->
         sha = '8ae432341ac6708aff9bb619eb015da14e9d0c0f'
         expect(process.stdout.write.calls.length).toBe 0
         json = JSON.parse(console.log.argsForCall[0][0])
         expect(json.length).toBe 1
-        expect(json[0].installPath).toBe path.join(process.env.ATOM_HOME, 'packages', 'test-git-repo')
+        expect(json[0].installPath).toBe path.join(process.env.VIA_HOME, 'packages', 'test-git-repo')
         expect(json[0].metadata.name).toBe 'test-git-repo'
-        expect(json[0].metadata.apmInstallSource).toEqual
+        expect(json[0].metadata.vpmInstallSource).toEqual
           type: 'git'
           source: cloneUrl
           sha: sha
@@ -477,7 +477,7 @@ describe 'apm install', ->
     describe 'when installing a registred package and --json is specified', ->
       beforeEach ->
         callback = jasmine.createSpy('callback')
-        apm.run(['install', "test-module", "test-module2", "--json"], callback)
+        vpm.run(['install', "test-module", "test-module2", "--json"], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -486,9 +486,9 @@ describe 'apm install', ->
         expect(process.stdout.write.calls.length).toBe 0
         json = JSON.parse(console.log.argsForCall[0][0])
         expect(json.length).toBe 2
-        expect(json[0].installPath).toBe path.join(process.env.ATOM_HOME, 'packages', 'test-module')
+        expect(json[0].installPath).toBe path.join(process.env.VIA_HOME, 'packages', 'test-module')
         expect(json[0].metadata.name).toBe 'test-module'
-        expect(json[1].installPath).toBe path.join(process.env.ATOM_HOME, 'packages', 'test-module2')
+        expect(json[1].installPath).toBe path.join(process.env.VIA_HOME, 'packages', 'test-module2')
         expect(json[1].metadata.name).toBe 'test-module2'
 
     describe "with a space in node-gyp's path", ->
@@ -497,16 +497,16 @@ describe 'apm install', ->
       beforeEach ->
         fs.renameSync path.join(nodeModules, 'node-gyp'), path.join(nodeModules, 'with a space')
         process.env.npm_config_node_gyp = path.join(nodeModules, 'with a space', 'bin', 'node-gyp.js')
-        process.env.ATOM_NODE_GYP_PATH = path.join(nodeModules, 'with a space', 'bin', 'node-gyp.js')
+        process.env.VIA_NODE_GYP_PATH = path.join(nodeModules, 'with a space', 'bin', 'node-gyp.js')
 
       afterEach ->
         fs.renameSync path.join(nodeModules, 'with a space'), path.join(nodeModules, 'node-gyp')
         process.env.npm_config_node_gyp = path.join(nodeModules, '.bin', 'node-gyp')
-        process.env.ATOM_NODE_GYP_PATH = path.join(nodeModules, 'node-gyp', 'bin', 'node-gyp.js')
+        process.env.VIA_NODE_GYP_PATH = path.join(nodeModules, 'node-gyp', 'bin', 'node-gyp.js')
 
       it 'builds native code successfully', ->
         callback = jasmine.createSpy('callback')
-        apm.run(['install', 'native-package'], callback)
+        vpm.run(['install', 'native-package'], callback)
 
         waitsFor 'waiting for install to complete', 600000, ->
           callback.callCount is 1
@@ -514,7 +514,7 @@ describe 'apm install', ->
         runs ->
           expect(callback.mostRecentCall.args[0]).toBeNull()
 
-          testModuleDirectory = path.join(atomHome, 'packages', 'native-package')
+          testModuleDirectory = path.join(viaHome, 'packages', 'native-package')
           expect(fs.existsSync(path.join(testModuleDirectory, 'index.js'))).toBeTruthy()
           expect(fs.existsSync(path.join(testModuleDirectory, 'package.json'))).toBeTruthy()
           expect(fs.existsSync(path.join(testModuleDirectory, 'build', 'Release', 'native.node'))).toBeTruthy()
@@ -540,7 +540,7 @@ describe 'apm install', ->
         process.env.PYTHON = path.join __dirname, 'fixtures', 'fake-python-1.sh'
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', 'native-package'], callback)
+        vpm.run(['install', 'native-package'], callback)
 
         waitsFor 'waiting for install to fail', 600000, ->
           callback.callCount is 1
@@ -555,7 +555,7 @@ describe 'apm install', ->
         process.env.PYTHON = path.join __dirname, 'fixtures', 'fake-python-1.sh'
 
         callback = jasmine.createSpy('callback')
-        apm.run(['install', 'native-package'], callback)
+        vpm.run(['install', 'native-package'], callback)
 
         waitsFor 'waiting for install to fail', 600000, ->
           callback.callCount is 1

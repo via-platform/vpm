@@ -2,57 +2,57 @@ child_process = require 'child_process'
 fs = require 'fs'
 path = require 'path'
 temp = require 'temp'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe "apm test", ->
+describe "vpm test", ->
   [specPath] = []
 
   beforeEach ->
     silenceOutput()
     spyOnToken()
 
-    currentDir = temp.mkdirSync('apm-init-')
+    currentDir = temp.mkdirSync('vpm-init-')
     spyOn(process, 'cwd').andReturn(currentDir)
     specPath = path.join(currentDir, 'spec')
 
-  it "calls atom to test", ->
-    atomSpawn = spyOn(child_process, 'spawn').andReturn
+  it "calls via to test", ->
+    viaSpawn = spyOn(child_process, 'spawn').andReturn
       stdout:
         on: ->
       stderr:
         on: ->
       on: ->
-    apm.run(['test'])
+    vpm.run(['test'])
 
     waitsFor 'waiting for test to complete', ->
-      atomSpawn.callCount is 1
+      viaSpawn.callCount is 1
 
     runs ->
       if process.platform is 'win32'
-        expect(atomSpawn.mostRecentCall.args[1][2].indexOf('atom')).not.toBe -1
-        expect(atomSpawn.mostRecentCall.args[1][2].indexOf('--dev')).not.toBe -1
-        expect(atomSpawn.mostRecentCall.args[1][2].indexOf('--test')).not.toBe -1
+        expect(viaSpawn.mostRecentCall.args[1][2].indexOf('via')).not.toBe -1
+        expect(viaSpawn.mostRecentCall.args[1][2].indexOf('--dev')).not.toBe -1
+        expect(viaSpawn.mostRecentCall.args[1][2].indexOf('--test')).not.toBe -1
       else
-        expect(atomSpawn.mostRecentCall.args[0]).toEqual 'atom'
-        expect(atomSpawn.mostRecentCall.args[1][0]).toEqual '--dev'
-        expect(atomSpawn.mostRecentCall.args[1][1]).toEqual '--test'
-        expect(atomSpawn.mostRecentCall.args[1][2]).toEqual specPath
-        expect(atomSpawn.mostRecentCall.args[2].streaming).toBeTruthy()
+        expect(viaSpawn.mostRecentCall.args[0]).toEqual 'via'
+        expect(viaSpawn.mostRecentCall.args[1][0]).toEqual '--dev'
+        expect(viaSpawn.mostRecentCall.args[1][1]).toEqual '--test'
+        expect(viaSpawn.mostRecentCall.args[1][2]).toEqual specPath
+        expect(viaSpawn.mostRecentCall.args[2].streaming).toBeTruthy()
 
   describe 'returning', ->
     [callback] = []
 
     returnWithCode = (type, code) ->
       callback = jasmine.createSpy('callback')
-      atomReturnFn = (e, fn) -> fn(code) if e is type
+      viaReturnFn = (e, fn) -> fn(code) if e is type
       spyOn(child_process, 'spawn').andReturn
         stdout:
           on: ->
         stderr:
           on: ->
-        on: atomReturnFn
+        on: viaReturnFn
         removeListener: -> # no op
-      apm.run(['test'], callback)
+      vpm.run(['test'], callback)
 
     describe 'successfully', ->
       beforeEach -> returnWithCode('close', 0)

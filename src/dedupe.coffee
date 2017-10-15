@@ -4,7 +4,7 @@ async = require 'async'
 _ = require 'underscore-plus'
 yargs = require 'yargs'
 
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 fs = require './fs'
 
@@ -13,17 +13,17 @@ class Dedupe extends Command
   @commandNames: ['dedupe']
 
   constructor: ->
-    @atomDirectory = config.getAtomDirectory()
-    @atomPackagesDirectory = path.join(@atomDirectory, 'packages')
-    @atomNodeDirectory = path.join(@atomDirectory, '.node-gyp')
-    @atomNpmPath = require.resolve('npm/bin/npm-cli')
-    @atomNodeGypPath = require.resolve('node-gyp/bin/node-gyp')
+    @viaDirectory = config.getAtomDirectory()
+    @viaPackagesDirectory = path.join(@viaDirectory, 'packages')
+    @viaNodeDirectory = path.join(@viaDirectory, '.node-gyp')
+    @viaNpmPath = require.resolve('npm/bin/npm-cli')
+    @viaNodeGypPath = require.resolve('node-gyp/bin/node-gyp')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm dedupe [<package_name>...]
+      Usage: vpm dedupe [<package_name>...]
 
       Reduce duplication in the node_modules folder in the current directory.
 
@@ -39,10 +39,10 @@ class Dedupe extends Command
     installNodeArgs.push("--arch=#{config.getElectronArch()}")
     installNodeArgs.push('--ensure')
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
     env.USERPROFILE = env.HOME if config.isWin32()
 
-    fs.makeTreeSync(@atomDirectory)
+    fs.makeTreeSync(@viaDirectory)
     config.loadNpm (error, npm) =>
       # node-gyp doesn't currently have an option for this so just set the
       # environment variable to bypass strict SSL
@@ -54,7 +54,7 @@ class Dedupe extends Command
       proxy = npm.config.get('https-proxy') or npm.config.get('proxy') or env.HTTPS_PROXY or env.HTTP_PROXY
       installNodeArgs.push("--proxy=#{proxy}") if proxy
 
-      @fork @atomNodeGypPath, installNodeArgs, {env, cwd: @atomDirectory}, (code, stderr='', stdout='') ->
+      @fork @viaNodeGypPath, installNodeArgs, {env, cwd: @viaDirectory}, (code, stderr='', stdout='') ->
         if code is 0
           callback()
         else
@@ -83,16 +83,16 @@ class Dedupe extends Command
 
     dedupeArgs.push(packageName) for packageName in options.argv._
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: config.getRustupHomeDirPath()})
     env.USERPROFILE = env.HOME if config.isWin32()
     dedupeOptions = {env}
     dedupeOptions.cwd = options.cwd if options.cwd
 
-    @fork(@atomNpmPath, dedupeArgs, dedupeOptions, callback)
+    @fork(@viaNpmPath, dedupeArgs, dedupeOptions, callback)
 
   createAtomDirectories: ->
-    fs.makeTreeSync(@atomDirectory)
-    fs.makeTreeSync(@atomNodeDirectory)
+    fs.makeTreeSync(@viaDirectory)
+    fs.makeTreeSync(@viaNodeDirectory)
 
   run: (options) ->
     {callback, cwd} = options

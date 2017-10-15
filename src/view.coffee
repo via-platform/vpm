@@ -3,7 +3,7 @@ yargs = require 'yargs'
 semver = require 'semver'
 
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 request = require './request'
 tree = require './tree'
 
@@ -15,9 +15,9 @@ class View extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm view <package_name>
+      Usage: vpm view <package_name>
 
-      View information about a package/theme in the atom.io registry.
+      View information about a package/theme in the via.io registry.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.boolean('json').describe('json', 'Output featured packages as JSON array')
@@ -39,7 +39,7 @@ class View extends Command
         continue unless semver.valid(version)
         continue unless metadata
 
-        engine = metadata.engines?.atom ? '*'
+        engine = metadata.engines?.via ? '*'
         continue unless semver.validRange(engine)
         continue unless semver.satisfies(installedAtomVersion, engine)
 
@@ -100,7 +100,7 @@ class View extends Command
         tree(items)
 
         console.log()
-        console.log "Run `apm install #{pack.name}` to install this package."
+        console.log "Run `vpm install #{pack.name}` to install this package."
         console.log()
 
       callback()

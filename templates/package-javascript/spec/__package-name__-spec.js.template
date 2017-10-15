@@ -11,8 +11,8 @@ describe('__PackageName__', () => {
   let workspaceElement, activationPromise;
 
   beforeEach(() => {
-    workspaceElement = atom.views.getView(atom.workspace);
-    activationPromise = atom.packages.activatePackage('__package-name__');
+    workspaceElement = via.views.getView(via.workspace);
+    activationPromise = via.packages.activatePackage('__package-name__');
   });
 
   describe('when the __package-name__:toggle event is triggered', () => {
@@ -23,7 +23,7 @@ describe('__PackageName__', () => {
 
       // This is an activation event, triggering it will cause the package to be
       // activated.
-      atom.commands.dispatch(workspaceElement, '__package-name__:toggle');
+      via.commands.dispatch(workspaceElement, '__package-name__:toggle');
 
       waitsForPromise(() => {
         return activationPromise;
@@ -35,9 +35,9 @@ describe('__PackageName__', () => {
         let __packageName__Element = workspaceElement.querySelector('.__package-name__');
         expect(__packageName__Element).toExist();
 
-        let __packageName__Panel = atom.workspace.panelForItem(__packageName__Element);
+        let __packageName__Panel = via.workspace.panelForItem(__packageName__Element);
         expect(__packageName__Panel.isVisible()).toBe(true);
-        atom.commands.dispatch(workspaceElement, '__package-name__:toggle');
+        via.commands.dispatch(workspaceElement, '__package-name__:toggle');
         expect(__packageName__Panel.isVisible()).toBe(false);
       });
     });
@@ -55,7 +55,7 @@ describe('__PackageName__', () => {
 
       // This is an activation event, triggering it causes the package to be
       // activated.
-      atom.commands.dispatch(workspaceElement, '__package-name__:toggle');
+      via.commands.dispatch(workspaceElement, '__package-name__:toggle');
 
       waitsForPromise(() => {
         return activationPromise;
@@ -65,7 +65,7 @@ describe('__PackageName__', () => {
         // Now we can test for view visibility
         let __packageName__Element = workspaceElement.querySelector('.__package-name__');
         expect(__packageName__Element).toBeVisible();
-        atom.commands.dispatch(workspaceElement, '__package-name__:toggle');
+        via.commands.dispatch(workspaceElement, '__package-name__:toggle');
         expect(__packageName__Element).not.toBeVisible();
       });
     });

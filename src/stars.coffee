@@ -2,7 +2,7 @@ _ = require 'underscore-plus'
 yargs = require 'yargs'
 
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 Install = require './install'
 Login = require './login'
 request = require './request'
@@ -16,10 +16,10 @@ class Stars extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm stars
-             apm stars --install
-             apm stars --user thedaniel
-             apm stars --themes
+      Usage: vpm stars
+             vpm stars --install
+             vpm stars --user thedaniel
+             vpm stars --themes
 
       List or install starred Atom packages and themes.
     """
@@ -29,9 +29,9 @@ class Stars extends Command
     options.alias('u', 'user').string('user').describe('user', 'GitHub username to show starred packages for')
     options.boolean('json').describe('json', 'Output packages as a JSON array')
 
-  getStarredPackages: (user, atomVersion, callback) ->
+  getStarredPackages: (user, viaVersion, callback) ->
     requestSettings = json: true
-    requestSettings.qs = engine: atomVersion if atomVersion
+    requestSettings.qs = engine: viaVersion if viaVersion
 
     if user
       requestSettings.url = "#{config.getAtomApiUrl()}/users/#{user}/stars"
@@ -83,7 +83,7 @@ class Stars extends Command
       label
 
     console.log()
-    console.log "Use `apm stars --install` to install them all or visit #{'http://atom.io/packages'.underline} to read more about them."
+    console.log "Use `vpm stars --install` to install them all or visit #{'http://via.io/packages'.underline} to read more about them."
     console.log()
     callback()
 

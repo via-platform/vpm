@@ -2,7 +2,7 @@ _ = require 'underscore-plus'
 yargs = require 'yargs'
 
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 request = require './request'
 tree = require './tree'
 
@@ -14,25 +14,25 @@ class Featured extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm featured
-             apm featured --themes
-             apm featured --compatible 0.49.0
+      Usage: vpm featured
+             vpm featured --themes
+             vpm featured --compatible 0.49.0
 
       List the Atom packages and themes that are currently featured in the
-      atom.io registry.
+      via.io registry.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.alias('t', 'themes').boolean('themes').describe('themes', 'Only list themes')
     options.alias('c', 'compatible').string('compatible').describe('compatible', 'Only list packages/themes compatible with this Atom version')
     options.boolean('json').describe('json', 'Output featured packages as JSON array')
 
-  getFeaturedPackagesByType: (atomVersion, packageType, callback) ->
-    [callback, atomVersion] = [atomVersion, null] if _.isFunction(atomVersion)
+  getFeaturedPackagesByType: (viaVersion, packageType, callback) ->
+    [callback, viaVersion] = [viaVersion, null] if _.isFunction(viaVersion)
 
     requestSettings =
       url: "#{config.getAtomApiUrl()}/#{packageType}/featured"
       json: true
-    requestSettings.qs = engine: atomVersion if atomVersion
+    requestSettings.qs = engine: viaVersion if viaVersion
 
     request.get requestSettings, (error, response, body=[]) ->
       if error?
@@ -46,11 +46,11 @@ class Featured extends Command
         message = request.getErrorMessage(response, body)
         callback("Requesting packages failed: #{message}")
 
-  getAllFeaturedPackages: (atomVersion, callback) ->
-    @getFeaturedPackagesByType atomVersion, 'packages', (error, packages) =>
+  getAllFeaturedPackages: (viaVersion, callback) ->
+    @getFeaturedPackagesByType viaVersion, 'packages', (error, packages) =>
       return callback(error) if error?
 
-      @getFeaturedPackagesByType atomVersion, 'themes', (error, themes) ->
+      @getFeaturedPackagesByType viaVersion, 'themes', (error, themes) ->
         return callback(error) if error?
         callback(null, packages.concat(themes))
 
@@ -76,7 +76,7 @@ class Featured extends Command
           label
 
         console.log()
-        console.log "Use `apm install` to install them or visit #{'http://atom.io/packages'.underline} to read more about them."
+        console.log "Use `vpm install` to install them or visit #{'http://via.io/packages'.underline} to read more about them."
         console.log()
 
       callback()

@@ -9,7 +9,7 @@ module.exports =
     if process.platform is 'win32' then process.env.USERPROFILE else process.env.HOME
 
   getAtomDirectory: ->
-    process.env.ATOM_HOME ? path.join(@getHomeDirectory(), '.atom')
+    process.env.VIA_HOME ? path.join(@getHomeDirectory(), '.via')
 
   getRustupHomeDirPath: ->
     if process.env.RUSTUP_HOME
@@ -18,60 +18,60 @@ module.exports =
       path.join(@getHomeDirectory(), '.multirust')
 
   getCacheDirectory: ->
-    path.join(@getAtomDirectory(), '.apm')
+    path.join(@getAtomDirectory(), '.vpm')
 
   getResourcePath: (callback) ->
-    if process.env.ATOM_RESOURCE_PATH
-      return process.nextTick -> callback(process.env.ATOM_RESOURCE_PATH)
+    if process.env.VIA_RESOURCE_PATH
+      return process.nextTick -> callback(process.env.VIA_RESOURCE_PATH)
 
-    apmFolder = path.resolve(__dirname, '..')
-    appFolder = path.dirname(apmFolder)
-    if path.basename(apmFolder) is 'apm' and path.basename(appFolder) is 'app'
+    vpmFolder = path.resolve(__dirname, '..')
+    appFolder = path.dirname(vpmFolder)
+    if path.basename(vpmFolder) is 'vpm' and path.basename(appFolder) is 'app'
       asarPath = "#{appFolder}.asar"
       if fs.existsSync(asarPath)
         return process.nextTick -> callback(asarPath)
 
-    apmFolder = path.resolve(__dirname, '..', '..', '..')
-    appFolder = path.dirname(apmFolder)
-    if path.basename(apmFolder) is 'apm' and path.basename(appFolder) is 'app'
+    vpmFolder = path.resolve(__dirname, '..', '..', '..')
+    appFolder = path.dirname(vpmFolder)
+    if path.basename(vpmFolder) is 'vpm' and path.basename(appFolder) is 'app'
       asarPath = "#{appFolder}.asar"
       if fs.existsSync(asarPath)
         return process.nextTick -> callback(asarPath)
 
     switch process.platform
       when 'darwin'
-        child_process.exec 'mdfind "kMDItemCFBundleIdentifier == \'com.github.atom\'"', (error, stdout='', stderr) ->
+        child_process.exec 'mdfind "kMDItemCFBundleIdentifier == \'com.github.via\'"', (error, stdout='', stderr) ->
           [appLocation] = stdout.split('\n') unless error
           appLocation = '/Applications/Atom.app' unless appLocation
           callback("#{appLocation}/Contents/Resources/app.asar")
       when 'linux'
-        appLocation = '/usr/local/share/atom/resources/app.asar'
+        appLocation = '/usr/local/share/via/resources/app.asar'
         unless fs.existsSync(appLocation)
-          appLocation = '/usr/share/atom/resources/app.asar'
+          appLocation = '/usr/share/via/resources/app.asar'
         process.nextTick -> callback(appLocation)
 
   getReposDirectory: ->
-    process.env.ATOM_REPOS_HOME ? path.join(@getHomeDirectory(), 'github')
+    process.env.VIA_REPOS_HOME ? path.join(@getHomeDirectory(), 'github')
 
   getElectronUrl: ->
-    process.env.ATOM_ELECTRON_URL ? 'https://atom.io/download/electron'
+    process.env.VIA_ELECTRON_URL ? 'https://via.io/download/electron'
 
   getAtomPackagesUrl: ->
-    process.env.ATOM_PACKAGES_URL ? "#{@getAtomApiUrl()}/packages"
+    process.env.VIA_PACKAGES_URL ? "#{@getAtomApiUrl()}/packages"
 
   getAtomApiUrl: ->
-    process.env.ATOM_API_URL ? 'https://atom.io/api'
+    process.env.VIA_API_URL ? 'https://via.io/api'
 
   getElectronArch: ->
     switch process.platform
       when 'darwin' then 'x64'
-      else process.env.ATOM_ARCH ? process.arch
+      else process.env.VIA_ARCH ? process.arch
 
   getUserConfigPath: ->
-    path.resolve(@getAtomDirectory(), '.apmrc')
+    path.resolve(@getAtomDirectory(), '.vpmrc')
 
   getGlobalConfigPath: ->
-    path.resolve(@getAtomDirectory(), '.apm', '.apmrc')
+    path.resolve(@getAtomDirectory(), '.vpm', '.vpmrc')
 
   isWin32: ->
     process.platform is 'win32'
@@ -106,10 +106,10 @@ module.exports =
     try
       fs.writeFileSync @getGlobalConfigPath(), """
         ; This file is auto-generated and should not be edited since any
-        ; modifications will be lost the next time any apm command is run.
+        ; modifications will be lost the next time any vpm command is run.
         ;
-        ; You should instead edit your .apmrc config located in ~/.atom/.apmrc
+        ; You should instead edit your .vpmrc config located in ~/.via/.vpmrc
         cache = #{@getCacheDirectory()}
-        ; Hide progress-bar to prevent npm from altering apm console output.
+        ; Hide progress-bar to prevent npm from altering vpm console output.
         progress = false
       """

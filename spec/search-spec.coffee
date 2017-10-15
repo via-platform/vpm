@@ -1,9 +1,9 @@
 path = require 'path'
 express = require 'express'
 http = require 'http'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 
-describe 'apm search', ->
+describe 'vpm search', ->
   server = null
 
   beforeEach ->
@@ -16,14 +16,14 @@ describe 'apm search', ->
     server =  http.createServer(app)
     server.listen(3000)
 
-    process.env.ATOM_PACKAGES_URL = "http://localhost:3000"
+    process.env.VIA_PACKAGES_URL = "http://localhost:3000"
 
   afterEach ->
     server.close()
 
   it 'lists the matching packages and excludes deprecated packages', ->
     callback = jasmine.createSpy('callback')
-    apm.run(['search', 'duck'], callback)
+    vpm.run(['search', 'duck'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0
@@ -37,7 +37,7 @@ describe 'apm search', ->
 
   it "logs an error if the query is missing or empty", ->
     callback = jasmine.createSpy('callback')
-    apm.run(['search'], callback)
+    vpm.run(['search'], callback)
 
     waitsFor 'waiting for command to complete', ->
       callback.callCount > 0

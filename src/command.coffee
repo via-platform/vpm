@@ -2,7 +2,7 @@ child_process = require 'child_process'
 path = require 'path'
 _ = require 'underscore-plus'
 semver = require 'semver'
-config = require './apm'
+config = require './vpm'
 git = require './git'
 
 module.exports =
@@ -90,7 +90,7 @@ class Command
         version = @normalizeVersion(version)
         @installedAtomVersion = version if semver.valid(version)
 
-      @electronVersion = process.env.ATOM_ELECTRON_VERSION ? electronVersion
+      @electronVersion = process.env.VIA_ELECTRON_VERSION ? electronVersion
       unless @electronVersion?
         throw new Error('Could not determine Electron version')
 

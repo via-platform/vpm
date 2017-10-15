@@ -1,7 +1,7 @@
 path = require 'path'
 _ = require 'underscore-plus'
 yargs = require 'yargs'
-apm = require './apm'
+vpm = require './vpm'
 Command = require './command'
 
 module.exports =
@@ -9,19 +9,19 @@ class Config extends Command
   @commandNames: ['config']
 
   constructor: ->
-    atomDirectory = apm.getAtomDirectory()
-    @atomNodeDirectory = path.join(atomDirectory, '.node-gyp')
-    @atomNpmPath = require.resolve('npm/bin/npm-cli')
+    viaDirectory = vpm.getAtomDirectory()
+    @viaNodeDirectory = path.join(viaDirectory, '.node-gyp')
+    @viaNpmPath = require.resolve('npm/bin/npm-cli')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm config set <key> <value>
-             apm config get <key>
-             apm config delete <key>
-             apm config list
-             apm config edit
+      Usage: vpm config set <key> <value>
+             vpm config get <key>
+             vpm config delete <key>
+             vpm config list
+             vpm config edit
 
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
@@ -30,13 +30,13 @@ class Config extends Command
     {callback} = options
     options = @parseOptions(options.commandArgs)
 
-    configArgs = ['--globalconfig', apm.getGlobalConfigPath(), '--userconfig', apm.getUserConfigPath(), 'config']
+    configArgs = ['--globalconfig', vpm.getGlobalConfigPath(), '--userconfig', vpm.getUserConfigPath(), 'config']
     configArgs = configArgs.concat(options.argv._)
 
-    env = _.extend({}, process.env, {HOME: @atomNodeDirectory, RUSTUP_HOME: apm.getRustupHomeDirPath()})
+    env = _.extend({}, process.env, {HOME: @viaNodeDirectory, RUSTUP_HOME: vpm.getRustupHomeDirPath()})
     configOptions = {env}
 
-    @fork @atomNpmPath, configArgs, configOptions, (code, stderr='', stdout='') ->
+    @fork @viaNpmPath, configArgs, configOptions, (code, stderr='', stdout='') ->
       if code is 0
         process.stdout.write(stdout) if stdout
         callback()

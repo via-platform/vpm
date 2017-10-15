@@ -5,7 +5,7 @@ async = require 'async'
 CSON = require 'season'
 yargs = require 'yargs'
 
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 fs = require './fs'
 Login = require './login'
@@ -20,14 +20,14 @@ class Star extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm star <package_name>...
+      Usage: vpm star <package_name>...
 
-      Star the given packages on https://atom.io
+      Star the given packages on https://via.io
 
-      Run `apm stars` to see all your starred packages.
+      Run `vpm stars` to see all your starred packages.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
-    options.boolean('installed').describe('installed', 'Star all packages in ~/.atom/packages')
+    options.boolean('installed').describe('installed', 'Star all packages in ~/.via/packages')
 
   starPackage: (packageName, {ignoreUnpublishedPackages, token}={}, callback) ->
     process.stdout.write '\u2B50  ' if process.platform is 'darwin'

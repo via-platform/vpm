@@ -2,7 +2,7 @@
 path = require 'path'
 _ = require 'underscore-plus'
 npm = require 'npm'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 
 addPortableGitToEnv = (env) ->

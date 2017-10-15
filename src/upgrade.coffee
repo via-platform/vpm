@@ -8,7 +8,7 @@ semver = require 'semver'
 Git = require 'git-utils'
 
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 Install = require './install'
 Packages = require './packages'
@@ -21,18 +21,18 @@ class Upgrade extends Command
   @commandNames: ['upgrade', 'outdated', 'update']
 
   constructor: ->
-    @atomDirectory = config.getAtomDirectory()
-    @atomPackagesDirectory = path.join(@atomDirectory, 'packages')
+    @viaDirectory = config.getAtomDirectory()
+    @viaPackagesDirectory = path.join(@viaDirectory, 'packages')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm upgrade
-             apm upgrade --list
-             apm upgrade [<package_name>...]
+      Usage: vpm upgrade
+             vpm upgrade --list
+             vpm upgrade [<package_name>...]
 
-      Upgrade out of date packages installed to ~/.atom/packages
+      Upgrade out of date packages installed to ~/.via/packages
 
       This command lists the out of date packages and then prompts to install
       available updates.
@@ -46,7 +46,7 @@ class Upgrade extends Command
 
   getInstalledPackages: (options) ->
     packages = []
-    for name in fs.list(@atomPackagesDirectory)
+    for name in fs.list(@viaPackagesDirectory)
       if pack = @getIntalledPackage(name)
         packages.push(pack)
 
@@ -57,7 +57,7 @@ class Upgrade extends Command
     packages
 
   getIntalledPackage: (name) ->
-    packageDirectory = path.join(@atomPackagesDirectory, name)
+    packageDirectory = path.join(@viaPackagesDirectory, name)
     return if fs.isSymbolicLinkSync(packageDirectory)
     try
       metadata = JSON.parse(fs.readFileSync(path.join(packageDirectory, 'package.json')))
@@ -85,15 +85,15 @@ class Upgrade extends Command
         message = body.message ? body.error ? body
         callback("Request for package information failed: #{message}")
       else
-        atomVersion = @installedAtomVersion
+        viaVersion = @installedAtomVersion
         latestVersion = pack.version
         for version, metadata of body.versions ? {}
           continue unless semver.valid(version)
           continue unless metadata
 
-          engine = metadata.engines?.atom ? '*'
+          engine = metadata.engines?.via ? '*'
           continue unless semver.validRange(engine)
-          continue unless semver.satisfies(atomVersion, engine)
+          continue unless semver.satisfies(viaVersion, engine)
 
           latestVersion = version if semver.gt(version, latestVersion)
 
@@ -103,7 +103,7 @@ class Upgrade extends Command
           callback()
 
   getLatestSha: (pack, callback) ->
-    repoPath = path.join(@atomPackagesDirectory, pack.name)
+    repoPath = path.join(@viaPackagesDirectory, pack.name)
     config.getSetting 'git', (command) =>
       command ?= 'git'
       args = ['fetch', 'origin', 'master']
@@ -112,7 +112,7 @@ class Upgrade extends Command
         return callback(code) unless code is 0
         repo = Git.open(repoPath)
         sha = repo.getReferenceTarget(repo.getUpstreamBranch('refs/heads/master'))
-        if sha isnt pack.apmInstallSource.sha
+        if sha isnt pack.vpmInstallSource.sha
           callback(null, sha)
         else
           callback()
@@ -122,7 +122,7 @@ class Upgrade extends Command
 
   getAvailableUpdates: (packages, callback) ->
     getLatestVersionOrSha = (pack, done) =>
-      if pack.apmInstallSource?.type is 'git'
+      if pack.vpmInstallSource?.type is 'git'
         @getLatestSha pack, (err, sha) ->
           done(err, {pack, sha})
       else
@@ -149,8 +149,8 @@ class Upgrade extends Command
     for {pack, latestVersion} in updates
       do (pack, latestVersion) ->
         installCommands.push (callback) ->
-          if pack.apmInstallSource?.type is 'git'
-            commandArgs = [pack.apmInstallSource.source]
+          if pack.vpmInstallSource?.type is 'git'
+            commandArgs = [pack.vpmInstallSource.source]
           else
             commandArgs = ["#{pack.name}@#{latestVersion}"]
           commandArgs.unshift('--verbose') if verbose
@@ -188,15 +188,15 @@ class Upgrade extends Command
       else
         console.log "Package Updates Available".cyan + " (#{updates.length})"
         tree updates, ({pack, latestVersion, sha}) ->
-          {name, apmInstallSource, version} = pack
+          {name, vpmInstallSource, version} = pack
           name = name.yellow
           if sha?
-            version = apmInstallSource.sha.substr(0, 8).red
+            version = vpmInstallSource.sha.substr(0, 8).red
             latestVersion = sha.substr(0, 8).green
           else
             version = version.red
             latestVersion = latestVersion.green
-          latestVersion = latestVersion?.green or apmInstallSource?.sha?.green
+          latestVersion = latestVersion?.green or vpmInstallSource?.sha?.green
           "#{name} #{version} -> #{latestVersion}"
 
       return callback() if options.command is 'outdated'

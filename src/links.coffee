@@ -3,7 +3,7 @@ path = require 'path'
 yargs = require 'yargs'
 
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 tree = require './tree'
 
@@ -19,10 +19,10 @@ class Links extends Command
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm links
+      Usage: vpm links
 
-      List all of the symlinked atom packages in ~/.atom/packages and
-      ~/.atom/dev/packages.
+      List all of the symlinked via packages in ~/.via/packages and
+      ~/.via/dev/packages.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
 

@@ -1,17 +1,17 @@
 path = require 'path'
 temp = require 'temp'
 CSON = require 'season'
-apm = require '../lib/apm-cli'
+vpm = require '../lib/vpm-cli'
 fs = require '../lib/fs'
 
-describe "apm init", ->
+describe "vpm init", ->
   [packagePath, themePath, languagePath] = []
 
   beforeEach ->
     silenceOutput()
     spyOnToken()
 
-    currentDir = temp.mkdirSync('apm-init-')
+    currentDir = temp.mkdirSync('vpm-init-')
     spyOn(process, 'cwd').andReturn(currentDir)
     packagePath = path.join(currentDir, 'fake-package')
     themePath = path.join(currentDir, 'fake-theme')
@@ -22,7 +22,7 @@ describe "apm init", ->
     describe "when package syntax is CoffeeScript", ->
       it "generates the proper file structure", ->
         callback = jasmine.createSpy('callback')
-        apm.run(['init', '--package', 'fake-package'], callback)
+        vpm.run(['init', '--package', 'fake-package'], callback)
 
         waitsFor 'waiting for init to complete', ->
           callback.callCount is 1
@@ -46,7 +46,7 @@ describe "apm init", ->
     describe "when package syntax is JavaScript", ->
       it "generates the proper file structure", ->
         callback = jasmine.createSpy('callback')
-        apm.run(['init', '--syntax', 'javascript', '--package', 'fake-package'], callback)
+        vpm.run(['init', '--syntax', 'javascript', '--package', 'fake-package'], callback)
 
         waitsFor 'waiting for init to complete', ->
           callback.callCount is 1
@@ -70,7 +70,7 @@ describe "apm init", ->
     describe "when package syntax is unsupported", ->
       it "logs an error", ->
         callback = jasmine.createSpy('callback')
-        apm.run(['init', '--syntax', 'something-unsupported', '--package', 'fake-package'], callback)
+        vpm.run(['init', '--syntax', 'something-unsupported', '--package', 'fake-package'], callback)
 
         waitsFor 'waiting for init to complete', ->
           callback.callCount is 1
@@ -82,7 +82,7 @@ describe "apm init", ->
       beforeEach ->
         callback = jasmine.createSpy('callback')
         textMateBundlePath = path.join(__dirname, 'fixtures', 'r.tmbundle')
-        apm.run(['init', '--package', 'fake-package', '--convert', textMateBundlePath], callback)
+        vpm.run(['init', '--package', 'fake-package', '--convert', textMateBundlePath], callback)
 
         waitsFor 'waiting for init to complete', ->
           callback.callCount is 1
@@ -120,7 +120,7 @@ describe "apm init", ->
   describe "when creating a theme", ->
     it "generates the proper file structure", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['init', '--theme', 'fake-theme'], callback)
+      vpm.run(['init', '--theme', 'fake-theme'], callback)
 
       waitsFor 'waiting for init to complete', ->
         callback.callCount is 1
@@ -140,7 +140,7 @@ describe "apm init", ->
       it "generates the proper file structure", ->
         callback = jasmine.createSpy('callback')
         textMateThemePath = path.join(__dirname, 'fixtures', 'Dawn.tmTheme')
-        apm.run(['init', '--theme', 'fake-theme', '--convert', textMateThemePath], callback)
+        vpm.run(['init', '--theme', 'fake-theme', '--convert', textMateThemePath], callback)
 
         waitsFor 'waiting for init to complete', ->
           callback.callCount is 1
@@ -157,12 +157,12 @@ describe "apm init", ->
           expect(fs.readFileSync(path.join(themePath, 'styles', 'base.less'), 'utf8')).toContain """
             @import "syntax-variables";
 
-            atom-text-editor {
+            via-text-editor {
               background-color: @syntax-background-color;
               color: @syntax-text-color;
             }
 
-            atom-text-editor .gutter {
+            via-text-editor .gutter {
               background-color: @syntax-gutter-background-color;
               color: @syntax-gutter-text-color;
             }
@@ -176,7 +176,7 @@ describe "apm init", ->
       it "logs an error if it doesn't have all the required color settings", ->
         callback = jasmine.createSpy('callback')
         textMateThemePath = path.join(__dirname, 'fixtures', 'Bad.tmTheme')
-        apm.run(['init', '--theme', 'fake-theme', '--convert', textMateThemePath], callback)
+        vpm.run(['init', '--theme', 'fake-theme', '--convert', textMateThemePath], callback)
 
         waitsFor 'waiting for init to complete', ->
           callback.callCount is 1
@@ -187,7 +187,7 @@ describe "apm init", ->
   describe "when creating a language", ->
     it "generates the proper file structure", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['init', '--language', 'fake'], callback)
+      vpm.run(['init', '--language', 'fake'], callback)
 
       waitsFor 'waiting for init to complete', ->
         callback.callCount is 1
@@ -204,7 +204,7 @@ describe "apm init", ->
 
     it "does not add language prefix to name if already present", ->
       callback = jasmine.createSpy('callback')
-      apm.run(['init', '--language', 'language-fake'], callback)
+      vpm.run(['init', '--language', 'language-fake'], callback)
 
       waitsFor 'waiting for init to complete', ->
         callback.callCount is 1

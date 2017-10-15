@@ -1,7 +1,7 @@
 npm = require 'npm'
 request = require 'request'
 
-config = require './apm'
+config = require './vpm'
 
 loadNpm = (callback) ->
   npmOptions =
@@ -51,7 +51,7 @@ module.exports =
 
   getErrorMessage: (response, body) ->
     if response?.statusCode is 503
-      'atom.io is temporarily unavailable, please try again later.'
+      'via.io is temporarily unavailable, please try again later.'
     else
       body?.message ? body?.error ? body
 

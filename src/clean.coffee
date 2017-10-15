@@ -6,7 +6,7 @@ yargs = require 'yargs'
 _ = require 'underscore-plus'
 
 Command = require './command'
-config = require './apm'
+config = require './vpm'
 fs = require './fs'
 
 module.exports =
@@ -14,7 +14,7 @@ class Clean extends Command
   @commandNames: ['clean']
 
   constructor: ->
-    @atomNpmPath = require.resolve('npm/bin/npm-cli')
+    @viaNpmPath = require.resolve('npm/bin/npm-cli')
 
   getDependencies: (modulePath, allDependencies) ->
     try
@@ -40,15 +40,15 @@ class Clean extends Command
     modulesToRemove = []
     modulesPath = path.resolve('node_modules')
     modulePathFilter = (modulePath) ->
-      modulePath isnt '.bin' and modulePath isnt 'atom-package-manager'
+      modulePath isnt '.bin' and modulePath isnt 'via-package-manager'
     installedModules = fs.list(modulesPath).filter modulePathFilter
 
     # Check if the module is a scoped module (starting with an '@')
     # If so, recursively lookup inside this directory
     # and concatenate to the root folder
     #
-    # e.g. if you have a dependency @types/atom, modulePath === @types
-    # fs.list(@types) === ['atom'], thus this will return ['@types/atom']
+    # e.g. if you have a dependency @types/via, modulePath === @types
+    # fs.list(@types) === ['via'], thus this will return ['@types/via']
     #
     # At the end, flat map, since these scoped packages can return more than 1
     # and normal modules return only 1
@@ -78,7 +78,7 @@ class Clean extends Command
     options = yargs(argv).wrap(100)
 
     options.usage """
-      Usage: apm clean
+      Usage: vpm clean
 
       Deletes all packages in the node_modules folder that are not referenced
       as a dependency in the package.json file.
@@ -87,7 +87,7 @@ class Clean extends Command
 
   removeModule: (module, callback) ->
     process.stdout.write("Removing #{module} ")
-    @fork @atomNpmPath, ['uninstall', module], (args...) =>
+    @fork @viaNpmPath, ['uninstall', module], (args...) =>
       @logCommandResults(callback, args...)
 
   run: (options) ->

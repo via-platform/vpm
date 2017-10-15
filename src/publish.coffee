@@ -6,7 +6,7 @@ Git = require 'git-utils'
 semver = require 'semver'
 
 fs = require './fs'
-config = require './apm'
+config = require './vpm'
 Command = require './command'
 Login = require './login'
 Packages = require './packages'
@@ -18,28 +18,28 @@ class Publish extends Command
 
   constructor: ->
     @userConfigPath = config.getUserConfigPath()
-    @atomNpmPath = require.resolve('npm/bin/npm-cli')
+    @viaNpmPath = require.resolve('npm/bin/npm-cli')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)
     options.usage """
 
-      Usage: apm publish [<newversion> | major | minor | patch | build]
-             apm publish --tag <tagname>
-             apm publish --rename <new-name>
+      Usage: vpm publish [<newversion> | major | minor | patch | build]
+             vpm publish --tag <tagname>
+             vpm publish --rename <new-name>
 
       Publish a new version of the package in the current working directory.
 
       If a new version or version increment is specified, then a new Git tag is
       created and the package.json file is updated with that new version before
-      it is published to the apm registry. The HEAD branch and the new tag are
+      it is published to the vpm registry. The HEAD branch and the new tag are
       pushed up to the remote repository automatically using this option.
 
       If a new name is provided via the --rename flag, the package.json file is
       updated with the new name and the package's name is updated on Atom.io.
 
-      Run `apm featured` to see all the featured packages or
-      `apm view <packagename>` to see information about your package after you
+      Run `vpm featured` to see all the featured packages or
+      `vpm view <packagename>` to see information about your package after you
       have published it.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
@@ -54,7 +54,7 @@ class Publish extends Command
   versionPackage: (version, callback) ->
     process.stdout.write 'Preparing and tagging a new version '
     versionArgs = ['version', version, '-m', 'Prepare %s release']
-    @fork @atomNpmPath, versionArgs, (code, stderr='', stdout='') =>
+    @fork @viaNpmPath, versionArgs, (code, stderr='', stdout='') =>
       if code is 0
         @logSuccess()
         callback(null, stdout.trim())
@@ -75,7 +75,7 @@ class Publish extends Command
       @logCommandResults(callback, args...)
 
   # Check for the tag being available from the GitHub API before notifying
-  # atom.io about the new version.
+  # via.io about the new version.
   #
   # The tag is checked for 5 times at 1 second intervals.
   #
@@ -220,7 +220,7 @@ class Publish extends Command
     if process.platform is 'darwin'
       process.stdout.write ' \uD83D\uDC4D  \uD83D\uDCE6  \uD83C\uDF89'
 
-    process.stdout.write "\nCheck it out at https://atom.io/packages/#{pack.name}\n"
+    process.stdout.write "\nCheck it out at https://via.io/packages/#{pack.name}\n"
 
   loadMetadata: ->
     metadataPath = path.resolve('package.json')
@@ -302,9 +302,9 @@ class Publish extends Command
 
       semverRange is 'latest'
 
-    if pack.engines?.atom?
-      unless semver.validRange(pack.engines.atom)
-        throw new Error("The Atom engine range in the package.json file is invalid: #{pack.engines.atom}")
+    if pack.engines?.via?
+      unless semver.validRange(pack.engines.via)
+        throw new Error("The Atom engine range in the package.json file is invalid: #{pack.engines.via}")
 
     for packageName, semverRange of pack.dependencies
       unless isValidRange(semverRange)
