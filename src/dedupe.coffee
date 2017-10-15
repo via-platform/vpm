@@ -13,7 +13,7 @@ class Dedupe extends Command
   @commandNames: ['dedupe']
 
   constructor: ->
-    @viaDirectory = config.getAtomDirectory()
+    @viaDirectory = config.getViaDirectory()
     @viaPackagesDirectory = path.join(@viaDirectory, 'packages')
     @viaNodeDirectory = path.join(@viaDirectory, '.node-gyp')
     @viaNpmPath = require.resolve('npm/bin/npm-cli')
@@ -90,7 +90,7 @@ class Dedupe extends Command
 
     @fork(@viaNpmPath, dedupeArgs, dedupeOptions, callback)
 
-  createAtomDirectories: ->
+  createViaDirectories: ->
     fs.makeTreeSync(@viaDirectory)
     fs.makeTreeSync(@viaNodeDirectory)
 
@@ -99,10 +99,10 @@ class Dedupe extends Command
     options = @parseOptions(options.commandArgs)
     options.cwd = cwd
 
-    @createAtomDirectories()
+    @createViaDirectories()
 
     commands = []
-    commands.push (callback) => @loadInstalledAtomMetadata(callback)
+    commands.push (callback) => @loadInstalledViaMetadata(callback)
     commands.push (callback) => @installNode(callback)
     commands.push (callback) => @dedupeModules(options, callback)
     async.waterfall commands, callback

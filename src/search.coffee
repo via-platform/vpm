@@ -17,7 +17,7 @@ class Search extends Command
 
       Usage: vpm search <package_name>
 
-      Search for Atom packages/themes on the via.io registry.
+      Search for Via packages/themes on the via.world registry.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.boolean('json').describe('json', 'Output matching packages as JSON array')
@@ -34,7 +34,7 @@ class Search extends Command
       qs.filter = 'theme'
 
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/search"
+      url: "#{config.getViaPackagesUrl()}/search"
       qs: qs
       json: true
 
@@ -81,7 +81,7 @@ class Search extends Command
           label
 
         console.log()
-        console.log "Use `vpm install` to install them or visit #{'http://via.io/packages'.underline} to read more about them."
+        console.log "Use `vpm install` to install them or visit #{'https://packages.via.world'.underline} to read more about them."
         console.log()
 
       callback()

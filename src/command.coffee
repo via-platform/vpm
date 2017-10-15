@@ -83,12 +83,12 @@ class Command
     else
       version
 
-  loadInstalledAtomMetadata: (callback) ->
+  loadInstalledViaMetadata: (callback) ->
     @getResourcePath (resourcePath) =>
       try
         {version, electronVersion} = require(path.join(resourcePath, 'package.json')) ? {}
         version = @normalizeVersion(version)
-        @installedAtomVersion = version if semver.valid(version)
+        @installedViaVersion = version if semver.valid(version)
 
       @electronVersion = process.env.VIA_ELECTRON_VERSION ? electronVersion
       unless @electronVersion?

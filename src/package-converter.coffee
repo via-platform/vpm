@@ -12,7 +12,7 @@ temp = require 'temp'
 fs = require './fs'
 request = require './request'
 
-# Convert a TextMate bundle to an Atom package
+# Convert a TextMate bundle to an Via package
 module.exports =
 class PackageConverter
   constructor: (@sourcePath, destinationPath) ->

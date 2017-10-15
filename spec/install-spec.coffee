@@ -331,7 +331,7 @@ describe 'vpm install', ->
         runs ->
           expect(callback.mostRecentCall.args[0]).not.toBeNull()
 
-    describe 'when the package is bundled with Atom', ->
+    describe 'when the package is bundled with Via', ->
       it 'logs a message to standard error', ->
         CSON.writeFileSync(path.join(resourcePath, 'package.json'), packageDependencies: 'test-module': '1.0')
 

@@ -15,9 +15,9 @@ class List extends Command
   @commandNames: ['list', 'ls']
 
   constructor: ->
-    @userPackagesDirectory = path.join(config.getAtomDirectory(), 'packages')
-    @devPackagesDirectory = path.join(config.getAtomDirectory(), 'dev', 'packages')
-    if configPath = CSON.resolve(path.join(config.getAtomDirectory(), 'config'))
+    @userPackagesDirectory = path.join(config.getViaDirectory(), 'packages')
+    @devPackagesDirectory = path.join(config.getViaDirectory(), 'dev', 'packages')
+    if configPath = CSON.resolve(path.join(config.getViaDirectory(), 'config'))
       try
         @disabledPackages = CSON.readFileSync(configPath)?['*']?.core?.disabledPackages
     @disabledPackages ?= []
@@ -34,7 +34,7 @@ class List extends Command
              vpm list --installed --bare > my-packages.txt
              vpm list --json
 
-      List all the installed packages and also the packages bundled with Atom.
+      List all the installed packages and also the packages bundled with Via.
     """
     options.alias('b', 'bare').boolean('bare').describe('bare', 'Print packages one per line with no formatting')
     options.alias('e', 'enabled').boolean('enabled').describe('enabled', 'Print only enabled packages')
@@ -138,9 +138,9 @@ class List extends Command
 
       unless options.argv.bare or options.argv.json
         if options.argv.themes
-          console.log "#{'Built-in Atom Themes'.cyan} (#{packages.length})"
+          console.log "#{'Built-in Via Themes'.cyan} (#{packages.length})"
         else
-          console.log "#{'Built-in Atom Packages'.cyan} (#{packages.length})"
+          console.log "#{'Built-in Via Packages'.cyan} (#{packages.length})"
 
       callback?(null, packages)
 

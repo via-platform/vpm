@@ -12,8 +12,8 @@ class Unlink extends Command
   @commandNames: ['unlink']
 
   constructor: ->
-    @devPackagesPath = path.join(config.getAtomDirectory(), 'dev', 'packages')
-    @packagesPath = path.join(config.getAtomDirectory(), 'packages')
+    @devPackagesPath = path.join(config.getViaDirectory(), 'dev', 'packages')
+    @packagesPath = path.join(config.getViaDirectory(), 'packages')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)

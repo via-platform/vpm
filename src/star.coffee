@@ -22,7 +22,7 @@ class Star extends Command
 
       Usage: vpm star <package_name>...
 
-      Star the given packages on https://via.io
+      Star the given packages on https://via.world
 
       Run `vpm stars` to see all your starred packages.
     """
@@ -34,7 +34,7 @@ class Star extends Command
     process.stdout.write "Starring #{packageName} "
     requestSettings =
       json: true
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}/star"
+      url: "#{config.getViaPackagesUrl()}/#{packageName}/star"
       headers:
         authorization: token
     request.post requestSettings, (error, response, body={}) =>
@@ -54,7 +54,7 @@ class Star extends Command
 
   getInstalledPackageNames: ->
     installedPackages = []
-    userPackagesDirectory = path.join(config.getAtomDirectory(), 'packages')
+    userPackagesDirectory = path.join(config.getViaDirectory(), 'packages')
     for child in fs.list(userPackagesDirectory)
       continue unless fs.isDirectorySync(path.join(userPackagesDirectory, child))
 

@@ -16,7 +16,7 @@ class Unstar extends Command
 
       Usage: vpm unstar <package_name>...
 
-      Unstar the given packages on https://via.io
+      Unstar the given packages on https://via.world
 
       Run `vpm stars` to see all your starred packages.
     """
@@ -27,7 +27,7 @@ class Unstar extends Command
     process.stdout.write "Unstarring #{packageName} "
     requestSettings =
       json: true
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}/star"
+      url: "#{config.getViaPackagesUrl()}/#{packageName}/star"
       headers:
         authorization: token
     request.del requestSettings, (error, response, body={}) =>

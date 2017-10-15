@@ -9,10 +9,10 @@ catch error
   else
     throw error
 
-tokenName = 'Atom.io API Token'
+tokenName = 'Via.io API Token'
 
 module.exports =
-  # Get the Atom.io API token from the keychain.
+  # Get the Via.io API token from the keychain.
   #
   # callback - A function to call with an error as the first argument and a
   #            string token as the second argument.
@@ -28,7 +28,7 @@ module.exports =
           callback(null, token)
         else
           callback """
-            No Atom.io API token in keychain
+            No Via.io API token in keychain
             Run `vpm login` or set the `VIA_ACCESS_TOKEN` environment variable.
           """
 
@@ -36,4 +36,4 @@ module.exports =
   #
   # token - A string token to save.
   saveToken: (token) ->
-    keytar.setPassword(tokenName, 'via.io', token)
+    keytar.setPassword(tokenName, 'via.world', token)

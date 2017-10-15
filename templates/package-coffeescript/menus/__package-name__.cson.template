@@ -1,4 +1,4 @@
-# See https://via.io/docs/latest/hacking-via-package-word-count#menus for more details
+# See https://via.world/docs/latest/hacking-via-package-word-count#menus for more details
 'context-menu':
   'via-text-editor': [
     {

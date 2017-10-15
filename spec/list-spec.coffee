@@ -67,7 +67,7 @@ describe 'vpm list', ->
   it 'lists the installed packages', ->
     listPackages [], ->
       lines = console.log.argsForCall.map((arr) -> arr.join(' '))
-      expect(lines[0]).toMatch /Built-in Atom Packages.*1/
+      expect(lines[0]).toMatch /Built-in Via Packages.*1/
       expect(lines[1]).toMatch /test-module@1\.0\.0/
       expect(lines[3]).toMatch /Dev Packages.*1/
       expect(lines[4]).toMatch /dev-package@1\.0\.0/
@@ -142,7 +142,7 @@ describe 'vpm list', ->
       removeFakePackage 'user', 'user-package'
       listPackages [], ->
         lines = console.log.argsForCall.map((arr) -> arr.join(' '))
-        expect(lines[0]).toMatch /Built-in Atom Packages.*1/
+        expect(lines[0]).toMatch /Built-in Via Packages.*1/
         expect(lines[1]).toMatch /test-module@1\.0\.0/
         expect(lines[3]).toMatch /Dev Packages.*1/
         expect(lines[4]).toMatch /dev-package@1\.0\.0/

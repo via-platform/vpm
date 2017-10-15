@@ -39,7 +39,7 @@ class Uninstall extends Command
       return callback() unless token
 
       requestOptions =
-        url: "#{config.getAtomPackagesUrl()}/#{packageName}/versions/#{packageVersion}/events/uninstall"
+        url: "#{config.getViaPackagesUrl()}/#{packageName}/versions/#{packageVersion}/events/uninstall"
         json: true
         headers:
           authorization: token
@@ -55,8 +55,8 @@ class Uninstall extends Command
       callback("Please specify a package name to uninstall")
       return
 
-    packagesDirectory = path.join(config.getAtomDirectory(), 'packages')
-    devPackagesDirectory = path.join(config.getAtomDirectory(), 'dev', 'packages')
+    packagesDirectory = path.join(config.getViaDirectory(), 'packages')
+    devPackagesDirectory = path.join(config.getViaDirectory(), 'dev', 'packages')
 
     uninstallsToRegister = []
     uninstallError = null

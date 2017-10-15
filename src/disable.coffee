@@ -39,9 +39,9 @@ class Disable extends Command
 
     packageNames = @packageNamesFromArgv(options.argv)
 
-    configFilePath = CSON.resolve(path.join(config.getAtomDirectory(), 'config'))
+    configFilePath = CSON.resolve(path.join(config.getViaDirectory(), 'config'))
     unless configFilePath
-      callback("Could not find config.cson. Run Atom first?")
+      callback("Could not find config.cson. Run Via first?")
       return
 
     try

@@ -10,7 +10,7 @@ class RebuildModuleCache extends Command
   @commandNames: ['rebuild-module-cache']
 
   constructor: ->
-    @viaPackagesDirectory = path.join(config.getAtomDirectory(), 'packages')
+    @viaPackagesDirectory = path.join(config.getViaDirectory(), 'packages')
 
   parseOptions: (argv) ->
     options = yargs(argv).wrap(100)

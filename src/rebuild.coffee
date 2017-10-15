@@ -12,7 +12,7 @@ class Rebuild extends Command
   @commandNames: ['rebuild']
 
   constructor: ->
-    @viaNodeDirectory = path.join(config.getAtomDirectory(), '.node-gyp')
+    @viaNodeDirectory = path.join(config.getViaDirectory(), '.node-gyp')
     @viaNpmPath = require.resolve('npm/bin/npm-cli')
 
   parseOptions: (argv) ->
@@ -32,7 +32,7 @@ class Rebuild extends Command
     config.loadNpm (error, npm) ->
       install = new Install()
       install.npm = npm
-      install.loadInstalledAtomMetadata -> install.installNode(callback)
+      install.loadInstalledViaMetadata -> install.installNode(callback)
 
   forkNpmRebuild: (options, callback) ->
     process.stdout.write 'Rebuilding modules '
@@ -63,7 +63,7 @@ class Rebuild extends Command
     options = @parseOptions(options.commandArgs)
 
     config.loadNpm (error, @npm) =>
-      @loadInstalledAtomMetadata =>
+      @loadInstalledViaMetadata =>
         @installNode (error) =>
           return callback(error) if error?
 

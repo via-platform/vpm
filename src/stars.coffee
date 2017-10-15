@@ -21,7 +21,7 @@ class Stars extends Command
              vpm stars --user thedaniel
              vpm stars --themes
 
-      List or install starred Atom packages and themes.
+      List or install starred Via packages and themes.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.alias('i', 'install').boolean('install').describe('install', 'Install the starred packages')
@@ -34,10 +34,10 @@ class Stars extends Command
     requestSettings.qs = engine: viaVersion if viaVersion
 
     if user
-      requestSettings.url = "#{config.getAtomApiUrl()}/users/#{user}/stars"
+      requestSettings.url = "#{config.getViaApiUrl()}/users/#{user}/stars"
       @requestStarredPackages(requestSettings, callback)
     else
-      requestSettings.url = "#{config.getAtomApiUrl()}/stars"
+      requestSettings.url = "#{config.getViaApiUrl()}/stars"
       Login.getTokenOrLogin (error, token) =>
         return callback(error) if error?
 
@@ -83,7 +83,7 @@ class Stars extends Command
       label
 
     console.log()
-    console.log "Use `vpm stars --install` to install them all or visit #{'http://via.io/packages'.underline} to read more about them."
+    console.log "Use `vpm stars --install` to install them all or visit #{'https://packages.via.world'.underline} to read more about them."
     console.log()
     callback()
 

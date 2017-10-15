@@ -22,7 +22,7 @@ class Install extends Command
   @commandNames: ['install', 'i']
 
   constructor: ->
-    @viaDirectory = config.getAtomDirectory()
+    @viaDirectory = config.getViaDirectory()
     @viaPackagesDirectory = path.join(@viaDirectory, 'packages')
     @viaNodeDirectory = path.join(@viaDirectory, '.node-gyp')
     @viaNpmPath = require.resolve('npm/bin/npm-cli')
@@ -38,7 +38,7 @@ class Install extends Command
              vpm install --packages-file my-packages.txt
              vpm i (with any of the previous argument usage)
 
-      Install the given Atom package to ~/.via/packages/<package_name>.
+      Install the given Via package to ~/.via/packages/<package_name>.
 
       If no package name is given then all the dependencies in the package.json
       file are installed to the node_modules folder in the current working
@@ -48,7 +48,7 @@ class Install extends Command
       package names to install with optional versions using the
       `package-name@version` syntax.
     """
-    options.alias('c', 'compatible').string('compatible').describe('compatible', 'Only install packages/themes compatible with this Atom version')
+    options.alias('c', 'compatible').string('compatible').describe('compatible', 'Only install packages/themes compatible with this Via version')
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.alias('s', 'silent').boolean('silent').describe('silent', 'Set the npm log level to silent')
     options.alias('q', 'quiet').boolean('quiet').describe('quiet', 'Set the npm log level to warn')
@@ -211,14 +211,14 @@ class Install extends Command
 
     @fork(@viaNpmPath, installArgs, installOptions, callback)
 
-  # Request package information from the via.io API for a given package name.
+  # Request package information from the via.world API for a given package name.
   #
   # packageName - The string name of the package to request.
   # callback - The function to invoke when the request completes with an error
   #            as the first argument and an object as the second.
   requestPackage: (packageName, callback) ->
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}"
+      url: "#{config.getViaPackagesUrl()}/#{packageName}"
       json: true
       retries: 4
     request.get requestSettings, (error, response, body={}) ->
@@ -333,7 +333,7 @@ class Install extends Command
         packageVersion ?= @getLatestCompatibleVersion(pack)
         unless packageVersion
           @logFailure()
-          callback("No available version compatible with the installed Atom version: #{@installedAtomVersion}")
+          callback("No available version compatible with the installed Via version: #{@installedViaVersion}")
           return
 
         {tarball} = pack.versions[packageVersion]?.dist ? {}
@@ -408,7 +408,7 @@ class Install extends Command
     catch error
       {}
 
-  createAtomDirectories: ->
+  createViaDirectories: ->
     fs.makeTreeSync(@viaDirectory)
     fs.makeTreeSync(@viaPackagesDirectory)
     fs.makeTreeSync(@viaNodeDirectory)
@@ -487,7 +487,7 @@ class Install extends Command
       callback(viaMetadata?.packageDependencies?.hasOwnProperty(packageName))
 
   getLatestCompatibleVersion: (pack) ->
-    unless @installedAtomVersion
+    unless @installedViaVersion
       if isDeprecatedPackage(pack.name, pack.releases.latest)
         return null
       else
@@ -501,7 +501,7 @@ class Install extends Command
 
       engine = metadata.engines?.via ? '*'
       continue unless semver.validRange(engine)
-      continue unless semver.satisfies(@installedAtomVersion, engine)
+      continue unless semver.satisfies(@installedViaVersion, engine)
 
       latestVersion ?= version
       latestVersion = version if semver.gt(version, latestVersion)
@@ -612,11 +612,11 @@ class Install extends Command
     options = @parseOptions(options.commandArgs)
     packagesFilePath = options.argv['packages-file']
 
-    @createAtomDirectories()
+    @createViaDirectories()
 
     if options.argv.check
       config.loadNpm (error, @npm) =>
-        @loadInstalledAtomMetadata =>
+        @loadInstalledViaMetadata =>
           @checkNativeBuildTools(callback)
       return
 
@@ -641,9 +641,9 @@ class Install extends Command
         @isBundledPackage name, (isBundledPackage) =>
           if isBundledPackage
             console.error """
-              The #{name} package is bundled with Atom and should not be explicitly installed.
+              The #{name} package is bundled with Via and should not be explicitly installed.
               You can run `vpm uninstall #{name}` to uninstall it and then the version bundled
-              with Atom will be used.
+              with Via will be used.
             """.yellow
           @installRegisteredPackage({name, version}, options, nextInstallStep)
 
@@ -658,7 +658,7 @@ class Install extends Command
 
     commands = []
     commands.push (callback) => config.loadNpm (error, @npm) => callback(error)
-    commands.push (callback) => @loadInstalledAtomMetadata -> callback()
+    commands.push (callback) => @loadInstalledViaMetadata -> callback()
     packageNames.forEach (packageName) ->
       commands.push (callback) -> installPackage(packageName, callback)
     iteratee = (item, next) -> item(next)

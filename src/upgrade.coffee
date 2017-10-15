@@ -21,7 +21,7 @@ class Upgrade extends Command
   @commandNames: ['upgrade', 'outdated', 'update']
 
   constructor: ->
-    @viaDirectory = config.getAtomDirectory()
+    @viaDirectory = config.getViaDirectory()
     @viaPackagesDirectory = path.join(@viaDirectory, 'packages')
 
   parseOptions: (argv) ->
@@ -41,7 +41,7 @@ class Upgrade extends Command
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.alias('l', 'list').boolean('list').describe('list', 'List but don\'t install the outdated packages')
     options.boolean('json').describe('json', 'Output outdated packages as a JSON array')
-    options.string('compatible').describe('compatible', 'Only list packages/themes compatible with this Atom version')
+    options.string('compatible').describe('compatible', 'Only list packages/themes compatible with this Via version')
     options.boolean('verbose').default('verbose', false).describe('verbose', 'Show verbose debug information')
 
   getInstalledPackages: (options) ->
@@ -63,18 +63,18 @@ class Upgrade extends Command
       metadata = JSON.parse(fs.readFileSync(path.join(packageDirectory, 'package.json')))
       return metadata if metadata?.name and metadata?.version
 
-  loadInstalledAtomVersion: (options, callback) ->
+  loadInstalledViaVersion: (options, callback) ->
     if options.argv.compatible
       process.nextTick =>
         version = @normalizeVersion(options.argv.compatible)
-        @installedAtomVersion = version if semver.valid(version)
+        @installedViaVersion = version if semver.valid(version)
         callback()
     else
-      @loadInstalledAtomMetadata(callback)
+      @loadInstalledViaMetadata(callback)
 
   getLatestVersion: (pack, callback) ->
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{pack.name}"
+      url: "#{config.getViaPackagesUrl()}/#{pack.name}"
       json: true
     request.get requestSettings, (error, response, body={}) =>
       if error?
@@ -85,7 +85,7 @@ class Upgrade extends Command
         message = body.message ? body.error ? body
         callback("Request for package information failed: #{message}")
       else
-        viaVersion = @installedAtomVersion
+        viaVersion = @installedViaVersion
         latestVersion = pack.version
         for version, metadata of body.versions ? {}
           continue unless semver.valid(version)
@@ -168,11 +168,11 @@ class Upgrade extends Command
       request.debug(true)
       process.env.NODE_DEBUG = 'request'
 
-    @loadInstalledAtomVersion options, =>
-      if @installedAtomVersion
+    @loadInstalledViaVersion options, =>
+      if @installedViaVersion
         @upgradePackages(options, callback)
       else
-        callback('Could not determine current Atom version installed')
+        callback('Could not determine current Via version installed')
 
   upgradePackages: (options, callback) ->
     packages = @getInstalledPackages(options)

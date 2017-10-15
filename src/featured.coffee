@@ -18,19 +18,19 @@ class Featured extends Command
              vpm featured --themes
              vpm featured --compatible 0.49.0
 
-      List the Atom packages and themes that are currently featured in the
-      via.io registry.
+      List the Via packages and themes that are currently featured in the
+      via.world registry.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.alias('t', 'themes').boolean('themes').describe('themes', 'Only list themes')
-    options.alias('c', 'compatible').string('compatible').describe('compatible', 'Only list packages/themes compatible with this Atom version')
+    options.alias('c', 'compatible').string('compatible').describe('compatible', 'Only list packages/themes compatible with this Via version')
     options.boolean('json').describe('json', 'Output featured packages as JSON array')
 
   getFeaturedPackagesByType: (viaVersion, packageType, callback) ->
     [callback, viaVersion] = [viaVersion, null] if _.isFunction(viaVersion)
 
     requestSettings =
-      url: "#{config.getAtomApiUrl()}/#{packageType}/featured"
+      url: "#{config.getViaApiUrl()}/#{packageType}/featured"
       json: true
     requestSettings.qs = engine: viaVersion if viaVersion
 
@@ -65,9 +65,9 @@ class Featured extends Command
         console.log(JSON.stringify(packages))
       else
         if options.argv.themes
-          console.log "#{'Featured Atom Themes'.cyan} (#{packages.length})"
+          console.log "#{'Featured Via Themes'.cyan} (#{packages.length})"
         else
-          console.log "#{'Featured Atom Packages'.cyan} (#{packages.length})"
+          console.log "#{'Featured Via Packages'.cyan} (#{packages.length})"
 
         tree packages, ({name, version, description, downloads, stargazers_count}) ->
           label = name.yellow
@@ -76,7 +76,7 @@ class Featured extends Command
           label
 
         console.log()
-        console.log "Use `vpm install` to install them or visit #{'http://via.io/packages'.underline} to read more about them."
+        console.log "Use `vpm install` to install them or visit #{'https://packages.via.world'.underline} to read more about them."
         console.log()
 
       callback()

@@ -6,6 +6,6 @@
 # the root workspace element.
 
 # For more detailed documentation see
-# https://via.io/docs/latest/behind-via-keymaps-in-depth
+# https://via.world/docs/latest/behind-via-keymaps-in-depth
 'via-workspace':
   'ctrl-alt-o': '__package-name__:toggle'

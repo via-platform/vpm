@@ -36,7 +36,7 @@ class Publish extends Command
       pushed up to the remote repository automatically using this option.
 
       If a new name is provided via the --rename flag, the package.json file is
-      updated with the new name and the package's name is updated on Atom.io.
+      updated with the new name and the package's name is updated on Via.io.
 
       Run `vpm featured` to see all the featured packages or
       `vpm view <packagename>` to see information about your package after you
@@ -75,7 +75,7 @@ class Publish extends Command
       @logCommandResults(callback, args...)
 
   # Check for the tag being available from the GitHub API before notifying
-  # via.io about the new version.
+  # via.world about the new version.
   #
   # The tag is checked for 5 times at 1 second intervals.
   #
@@ -112,7 +112,7 @@ class Publish extends Command
       return callback(error) if error?
 
       requestSettings =
-        url: "#{config.getAtomPackagesUrl()}/#{packageName}"
+        url: "#{config.getViaPackagesUrl()}/#{packageName}"
         json: true
         headers:
           authorization: token
@@ -147,7 +147,7 @@ class Publish extends Command
           return
 
         requestSettings =
-          url: config.getAtomPackagesUrl()
+          url: config.getViaPackagesUrl()
           json: true
           body:
             repository: repository
@@ -177,7 +177,7 @@ class Publish extends Command
         return
 
       requestSettings =
-        url: "#{config.getAtomPackagesUrl()}/#{packageName}/versions"
+        url: "#{config.getViaPackagesUrl()}/#{packageName}/versions"
         json: true
         body:
           tag: tag
@@ -220,7 +220,7 @@ class Publish extends Command
     if process.platform is 'darwin'
       process.stdout.write ' \uD83D\uDC4D  \uD83D\uDCE6  \uD83C\uDF89'
 
-    process.stdout.write "\nCheck it out at https://via.io/packages/#{pack.name}\n"
+    process.stdout.write "\nCheck it out at https://packages.via.world/#{pack.name}\n"
 
   loadMetadata: ->
     metadataPath = path.resolve('package.json')
@@ -304,7 +304,7 @@ class Publish extends Command
 
     if pack.engines?.via?
       unless semver.validRange(pack.engines.via)
-        throw new Error("The Atom engine range in the package.json file is invalid: #{pack.engines.via}")
+        throw new Error("The Via engine range in the package.json file is invalid: #{pack.engines.via}")
 
     for packageName, semverRange of pack.dependencies
       unless isValidRange(semverRange)

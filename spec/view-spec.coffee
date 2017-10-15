@@ -46,7 +46,7 @@ describe 'vpm view', ->
       expect(console.error).toHaveBeenCalled()
       expect(console.error.argsForCall[0][0].length).toBeGreaterThan 0
 
-  describe "when a compatible Atom version is specified", ->
+  describe "when a compatible Via version is specified", ->
     it "displays the latest compatible version of the package", ->
       callback = jasmine.createSpy('callback')
       vpm.run(['view', 'wrap-guide', '--compatible', '1.5.0'], callback)

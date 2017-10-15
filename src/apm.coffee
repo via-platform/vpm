@@ -8,7 +8,7 @@ module.exports =
   getHomeDirectory: ->
     if process.platform is 'win32' then process.env.USERPROFILE else process.env.HOME
 
-  getAtomDirectory: ->
+  getViaDirectory: ->
     process.env.VIA_HOME ? path.join(@getHomeDirectory(), '.via')
 
   getRustupHomeDirPath: ->
@@ -18,7 +18,7 @@ module.exports =
       path.join(@getHomeDirectory(), '.multirust')
 
   getCacheDirectory: ->
-    path.join(@getAtomDirectory(), '.vpm')
+    path.join(@getViaDirectory(), '.vpm')
 
   getResourcePath: (callback) ->
     if process.env.VIA_RESOURCE_PATH
@@ -42,7 +42,7 @@ module.exports =
       when 'darwin'
         child_process.exec 'mdfind "kMDItemCFBundleIdentifier == \'com.github.via\'"', (error, stdout='', stderr) ->
           [appLocation] = stdout.split('\n') unless error
-          appLocation = '/Applications/Atom.app' unless appLocation
+          appLocation = '/Applications/Via.app' unless appLocation
           callback("#{appLocation}/Contents/Resources/app.asar")
       when 'linux'
         appLocation = '/usr/local/share/via/resources/app.asar'
@@ -54,13 +54,13 @@ module.exports =
     process.env.VIA_REPOS_HOME ? path.join(@getHomeDirectory(), 'github')
 
   getElectronUrl: ->
-    process.env.VIA_ELECTRON_URL ? 'https://via.io/download/electron'
+    process.env.VIA_ELECTRON_URL ? 'https://atom.io/download/electron'
 
-  getAtomPackagesUrl: ->
-    process.env.VIA_PACKAGES_URL ? "#{@getAtomApiUrl()}/packages"
+  getViaPackagesUrl: ->
+    process.env.VIA_PACKAGES_URL ? "#{@getViaApiUrl()}/packages"
 
-  getAtomApiUrl: ->
-    process.env.VIA_API_URL ? 'https://via.io/api'
+  getViaApiUrl: ->
+    process.env.VIA_API_URL ? 'https://via.world/api'
 
   getElectronArch: ->
     switch process.platform
@@ -68,10 +68,10 @@ module.exports =
       else process.env.VIA_ARCH ? process.arch
 
   getUserConfigPath: ->
-    path.resolve(@getAtomDirectory(), '.vpmrc')
+    path.resolve(@getViaDirectory(), '.vpmrc')
 
   getGlobalConfigPath: ->
-    path.resolve(@getAtomDirectory(), '.vpm', '.vpmrc')
+    path.resolve(@getViaDirectory(), '.vpm', '.vpmrc')
 
   isWin32: ->
     process.platform is 'win32'

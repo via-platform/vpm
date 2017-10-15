@@ -59,7 +59,7 @@ describe "vpm upgrade", ->
       expect(console.log).toHaveBeenCalled()
       expect(console.log.argsForCall[1][0]).toContain 'empty'
 
-  it "does not display updates for packages whose engine does not satisfy the installed Atom version", ->
+  it "does not display updates for packages whose engine does not satisfy the installed Via version", ->
     fs.writeFileSync(path.join(packagesDir, 'test-module', 'package.json'), JSON.stringify({name: 'test-module', version: '0.3.0', repository: 'https://github.com/a/b'}))
 
     callback = jasmine.createSpy('callback')
@@ -72,7 +72,7 @@ describe "vpm upgrade", ->
       expect(console.log).toHaveBeenCalled()
       expect(console.log.argsForCall[1][0]).toContain 'empty'
 
-  it "displays the latest update that satisfies the installed Atom version", ->
+  it "displays the latest update that satisfies the installed Via version", ->
     fs.writeFileSync(path.join(packagesDir, 'multi-module', 'package.json'), JSON.stringify({name: 'multi-module', version: '0.1.0', repository: 'https://github.com/a/b'}))
 
     callback = jasmine.createSpy('callback')
@@ -140,7 +140,7 @@ describe "vpm upgrade", ->
       expect(console.log).toHaveBeenCalled()
       expect(console.log.argsForCall[1][0]).toContain 'empty'
 
-  it "logs an error when the installed location of Atom cannot be found", ->
+  it "logs an error when the installed location of Via cannot be found", ->
     process.env.VIA_RESOURCE_PATH = '/tmp/via/is/not/installed/here'
     callback = jasmine.createSpy('callback')
     vpm.run(['upgrade', '--list', '--no-color'], callback)
@@ -150,7 +150,7 @@ describe "vpm upgrade", ->
 
     runs ->
       expect(console.error).toHaveBeenCalled()
-      expect(console.error.argsForCall[0][0]).toContain 'Could not determine current Atom version installed'
+      expect(console.error.argsForCall[0][0]).toContain 'Could not determine current Via version installed'
 
   it "ignores the commit SHA suffix in the version", ->
     fs.writeFileSync(path.join(viaApp, 'package.json'), JSON.stringify(version: '0.10.0-deadbeef'))

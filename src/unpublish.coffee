@@ -20,7 +20,7 @@ class Unpublish extends Command
       Usage: vpm unpublish [<package_name>]
              vpm unpublish <package_name>@<package_version>
 
-      Remove a published package or package version from the via.io registry.
+      Remove a published package or package version from the via.world registry.
 
       The package in the current working directory will be used if no package
       name is specified.
@@ -41,7 +41,7 @@ class Unpublish extends Command
         return
 
       options =
-        uri: "#{config.getAtomPackagesUrl()}/#{packageName}"
+        uri: "#{config.getViaPackagesUrl()}/#{packageName}"
         headers:
           authorization: token
         json: true

@@ -17,22 +17,22 @@ class View extends Command
 
       Usage: vpm view <package_name>
 
-      View information about a package/theme in the via.io registry.
+      View information about a package/theme in the via.world registry.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
     options.boolean('json').describe('json', 'Output featured packages as JSON array')
-    options.string('compatible').describe('compatible', 'Show the latest version compatible with this Atom version')
+    options.string('compatible').describe('compatible', 'Show the latest version compatible with this Via version')
 
-  loadInstalledAtomVersion: (options, callback) ->
+  loadInstalledViaVersion: (options, callback) ->
     process.nextTick =>
       if options.argv.compatible
         version = @normalizeVersion(options.argv.compatible)
-        installedAtomVersion = version if semver.valid(version)
-      callback(installedAtomVersion)
+        installedViaVersion = version if semver.valid(version)
+      callback(installedViaVersion)
 
   getLatestCompatibleVersion: (pack, options, callback) ->
-    @loadInstalledAtomVersion options, (installedAtomVersion) ->
-      return callback(pack.releases.latest) unless installedAtomVersion
+    @loadInstalledViaVersion options, (installedViaVersion) ->
+      return callback(pack.releases.latest) unless installedViaVersion
 
       latestVersion = null
       for version, metadata of pack.versions ? {}
@@ -41,7 +41,7 @@ class View extends Command
 
         engine = metadata.engines?.via ? '*'
         continue unless semver.validRange(engine)
-        continue unless semver.satisfies(installedAtomVersion, engine)
+        continue unless semver.satisfies(installedViaVersion, engine)
 
         latestVersion ?= version
         latestVersion = version if semver.gt(version, latestVersion)
@@ -54,7 +54,7 @@ class View extends Command
 
   getPackage: (packageName, options, callback) ->
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}"
+      url: "#{config.getViaPackagesUrl()}/#{packageName}"
       json: true
     request.get requestSettings, (error, response, body={}) =>
       if error?

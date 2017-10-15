@@ -9,7 +9,7 @@ class Config extends Command
   @commandNames: ['config']
 
   constructor: ->
-    viaDirectory = vpm.getAtomDirectory()
+    viaDirectory = vpm.getViaDirectory()
     @viaNodeDirectory = path.join(viaDirectory, '.node-gyp')
     @viaNpmPath = require.resolve('npm/bin/npm-cli')
 

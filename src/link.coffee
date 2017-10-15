@@ -37,9 +37,9 @@ class Link extends Command
     packageName = path.basename(linkPath) unless packageName
 
     if options.argv.dev
-      targetPath = path.join(config.getAtomDirectory(), 'dev', 'packages', packageName)
+      targetPath = path.join(config.getViaDirectory(), 'dev', 'packages', packageName)
     else
-      targetPath = path.join(config.getAtomDirectory(), 'packages', packageName)
+      targetPath = path.join(config.getViaDirectory(), 'packages', packageName)
 
     unless fs.existsSync(linkPath)
       callback("Package directory does not exist: #{linkPath}")

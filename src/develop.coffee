@@ -17,7 +17,7 @@ class Develop extends Command
   @commandNames: ['dev', 'develop']
 
   constructor: ->
-    @viaDirectory = config.getAtomDirectory()
+    @viaDirectory = config.getViaDirectory()
     @viaDevPackagesDirectory = path.join(@viaDirectory, 'dev', 'packages')
 
   parseOptions: (argv) ->
@@ -41,7 +41,7 @@ class Develop extends Command
 
   getRepositoryUrl: (packageName, callback) ->
     requestSettings =
-      url: "#{config.getAtomPackagesUrl()}/#{packageName}"
+      url: "#{config.getViaPackagesUrl()}/#{packageName}"
       json: true
     request.get requestSettings, (error, response, body={}) ->
       if error?

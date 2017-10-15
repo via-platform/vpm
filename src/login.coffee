@@ -24,11 +24,11 @@ class Login extends Command
     options.usage """
       Usage: vpm login
 
-      Enter your Atom.io API token and save it to the keychain. This token will
-      be used to identify you when publishing packages to via.io.
+      Enter your Via.io API token and save it to the keychain. This token will
+      be used to identify you when publishing packages to via.world.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
-    options.string('token').describe('token', 'via.io API token')
+    options.string('token').describe('token', 'via.world API token')
 
   run: (options) ->
     {callback} = options
@@ -49,22 +49,22 @@ class Login extends Command
     return Q(state) if state.token
 
     welcome = """
-      Welcome to Atom!
+      Welcome to Via!
 
       Before you can publish packages, you'll need an API token.
 
-      Visit your account page on Atom.io #{'https://via.io/account'.underline},
+      Visit your account page on Via.world #{'https://via.world/account'.underline},
       copy the token and paste it below when prompted.
 
     """
     console.log welcome
 
-    @prompt({prompt: "Press [Enter] to open your account page on Atom.io."})
+    @prompt({prompt: "Press [Enter] to open your account page on Via.io."})
 
   openURL: (state) ->
     return Q(state) if state.token
 
-    open('https://via.io/account')
+    open('https://via.world/account')
 
   getToken: (state) =>
     return Q(state) if state.token

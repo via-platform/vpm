@@ -65,7 +65,7 @@ parseOptions = (args=[]) ->
   options = yargs(args).wrap(100)
   options.usage """
 
-    vpm - Atom Package Manager powered by https://via.io
+    vpm - Via Package Manager powered by https://via.world
 
     Usage: vpm <command>
 
