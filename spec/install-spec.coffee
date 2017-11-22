@@ -24,7 +24,7 @@ describe 'vpm install', ->
     resourcePath = temp.mkdirSync('via-resource-path-')
     process.env.VIA_RESOURCE_PATH = resourcePath
 
-  describe "when installing an via package", ->
+  describe "when installing a via package", ->
     server = null
 
     beforeEach ->

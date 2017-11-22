@@ -2,7 +2,7 @@
 //
 // See https://github.com/via/via-dark-ui/blob/master/styles/ui-variables.less
 // for a full listing of what's available.
-@import "ui-variables";
+@import "variables";
 
 .__package-name__ {
 }

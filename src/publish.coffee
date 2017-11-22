@@ -36,7 +36,7 @@ class Publish extends Command
       pushed up to the remote repository automatically using this option.
 
       If a new name is provided via the --rename flag, the package.json file is
-      updated with the new name and the package's name is updated on Via.io.
+      updated with the new name and the package's name is updated on via.world.
 
       Run `vpm featured` to see all the featured packages or
       `vpm view <packagename>` to see information about your package after you
@@ -152,7 +152,7 @@ class Publish extends Command
           body:
             repository: repository
           headers:
-            authorization: token
+            authorization: 'Bearer: ' + token
         request.post requestSettings, (error, response, body={}) =>
           if error?
             callback(error)

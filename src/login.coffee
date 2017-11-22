@@ -24,7 +24,7 @@ class Login extends Command
     options.usage """
       Usage: vpm login
 
-      Enter your Via.io API token and save it to the keychain. This token will
+      Enter your via.world API token and save it to the keychain. This token will
       be used to identify you when publishing packages to via.world.
     """
     options.alias('h', 'help').describe('help', 'Print this usage message')
@@ -53,13 +53,13 @@ class Login extends Command
 
       Before you can publish packages, you'll need an API token.
 
-      Visit your account page on Via.world #{'https://via.world/account'.underline},
+      Visit your account page on via.world #{'https://via.world/account'.underline},
       copy the token and paste it below when prompted.
 
     """
     console.log welcome
 
-    @prompt({prompt: "Press [Enter] to open your account page on Via.io."})
+    @prompt({prompt: "Press [Enter] to open your account page on via.world."})
 
   openURL: (state) ->
     return Q(state) if state.token
