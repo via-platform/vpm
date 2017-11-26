@@ -159,6 +159,7 @@ class Publish extends Command
           else if response.statusCode isnt 201
             message = request.getErrorMessage(response, body)
             @logFailure()
+            console.log response.statusCode
             callback("Registering package in #{repository} repository failed: #{message}")
           else
             @logSuccess()
@@ -260,7 +261,7 @@ class Publish extends Command
     if name?.length > 0
       return callback('The new package name must be different than the name in the package.json file') if pack.name is name
 
-      message = "Renaming #{pack.name} to #{name} "
+      message = "Renaming #{pack.name} to #{name}"
       process.stdout.write(message)
       @setPackageName pack, name, (error) =>
         if error?

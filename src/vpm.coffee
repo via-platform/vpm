@@ -57,7 +57,7 @@ module.exports =
     process.env.VIA_ELECTRON_URL ? 'https://atom.io/download/electron'
 
   getViaPackagesUrl: ->
-    process.env.VIA_PACKAGES_URL ? "https://packages.via.world"
+    process.env.VIA_PACKAGES_URL ? "http://localhost:4100" #"https://packages.via.world"
 
   getViaApiUrl: ->
     process.env.VIA_API_URL ? 'https://via.world/api'
