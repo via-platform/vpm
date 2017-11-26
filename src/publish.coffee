@@ -152,7 +152,7 @@ class Publish extends Command
           body:
             repository: repository
           headers:
-            authorization: 'Bearer: ' + token
+            authorization: 'Bearer ' + token
         request.post requestSettings, (error, response, body={}) =>
           if error?
             callback(error)
