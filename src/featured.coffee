@@ -47,12 +47,12 @@ class Featured extends Command
         callback("Requesting packages failed: #{message}")
 
   getAllFeaturedPackages: (viaVersion, callback) ->
-    @getFeaturedPackagesByType viaVersion, 'packages', (error, packages) =>
+    @getFeaturedPackagesByType viaVersion, 'packages', (error, packages) ->
       return callback(error) if error?
-
-      @getFeaturedPackagesByType viaVersion, 'themes', (error, themes) ->
-        return callback(error) if error?
-        callback(null, packages.concat(themes))
+      callback(null, packages)
+      # @getFeaturedPackagesByType viaVersion, 'themes', (error, themes) ->
+      #   return callback(error) if error?
+      #   callback(null, packages.concat(themes))
 
   run: (options) ->
     {callback} = options

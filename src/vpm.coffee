@@ -60,7 +60,7 @@ module.exports =
     process.env.VIA_PACKAGES_URL ? "https://packages.via.world"
 
   getViaApiUrl: ->
-    process.env.VIA_API_URL ? 'https://via.world/api'
+    process.env.VIA_API_URL ? 'https://packages.via.world'
 
   getElectronArch: ->
     switch process.platform
