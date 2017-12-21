@@ -5,9 +5,9 @@ set -e
 initialCwd=`pwd -P`
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-apmPath=$0
-builtin cd "`dirname "$apmPath"`"
-binDir=`basename "$apmPath"`
+vpmPath=$0
+builtin cd "`dirname "$vpmPath"`"
+binDir=`basename "$vpmPath"`
 
 # Detect node binary name
 osName=`uname -s`
@@ -40,13 +40,13 @@ then
   export npm_config_node_gyp="$maybe_node_gyp_path"
 fi
 
-export ATOM_APM_ORIGINAL_PYTHON="${PYTHON:-}"
+export VIA_VPM_ORIGINAL_PYTHON="${PYTHON:-}"
 
 # Assumption: env iterates through environment variables in the same order that
 # process.env iterates through properties within npm. So, we take the last match.
 for var in $(env | grep -i ^npm_config_python=)
 do
-  ATOM_APM_ORIGINAL_PYTHON="${var#*=}"
+  VIA_VPM_ORIGINAL_PYTHON="${var#*=}"
   unset ${var%%=*}
 done
 

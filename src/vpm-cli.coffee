@@ -156,7 +156,7 @@ getPythonVersion = (callback) ->
 
 module.exports =
   run: (args, callback) ->
-    config.setupApmRcFile()
+    config.setupVpmRcFile()
     options = parseOptions(args)
 
     unless options.argv.color

@@ -14,7 +14,7 @@ configureRequest = (requestOptions, callback) ->
     requestOptions.proxy ?= npm.config.get('https-proxy') or npm.config.get('proxy') or process.env.HTTPS_PROXY or process.env.HTTP_PROXY
     requestOptions.strictSSL ?= npm.config.get('strict-ssl')
 
-    userAgent = npm.config.get('user-agent') ? "ViaApm/#{require('../package.json').version}"
+    userAgent = npm.config.get('user-agent') ? "ViaVpm/#{require('../package.json').version}"
     requestOptions.headers ?= {}
     requestOptions.headers['User-Agent'] ?= userAgent
     callback()

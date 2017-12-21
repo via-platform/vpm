@@ -102,7 +102,7 @@ module.exports =
   getSetting: (key, callback) ->
     @loadNpm -> callback(npm.config.get(key))
 
-  setupApmRcFile: ->
+  setupVpmRcFile: ->
     try
       fs.writeFileSync @getGlobalConfigPath(), """
         ; This file is auto-generated and should not be edited since any
