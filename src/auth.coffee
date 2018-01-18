@@ -9,7 +9,7 @@ catch error
   else
     throw error
 
-tokenName = 'identity.via.world'
+tokenName = 'Via Package Manager API Token'
 
 module.exports =
   # Get the via.world API token from the keychain.
